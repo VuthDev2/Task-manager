@@ -5,9 +5,9 @@ import Footer from './components/Footer';
 export default function Home() {
   return (
     <main className="bg-white">
-      <Hero />      {/* This shows the top */}
-      <Features />  {/* This shows the middle */}
-      <Footer />    {/* This shows the bottom */}
+      <Hero />      {/*  top */}
+      <Features />  {/*  middle */}
+      <Footer />    {/* bottom */}
     </main>
   );
 }
