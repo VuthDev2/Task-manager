@@ -1,17 +1,31 @@
 "use client";
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
 export default function OTPVerification() {
   const [otp, setOtp] = useState(new Array(6).fill(""));
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const router = useRouter();
+
+  // CHECK IF OTP IS COMPLETE
+  useEffect(() => {
+    const fullCode = otp.join("");
+    if (fullCode.length === 6) {
+      setTimeout(() => {
+        // FIXED: Using '/reset' because your folder is named 'reset' inside (Authen)
+        router.push('/reset'); 
+      }, 500);
+    }
+  }, [otp, router]);
 
   const handleChange = (element: HTMLInputElement, index: number) => {
     if (isNaN(Number(element.value))) return false;
 
-    setOtp([...otp.map((d, idx) => (idx === index ? element.value : d))]);
+    const newOtp = [...otp];
+    newOtp[index] = element.value.substring(element.value.length - 1);
+    setOtp(newOtp);
 
-    // Focus next input
     if (element.value !== "" && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
@@ -23,6 +37,13 @@ export default function OTPVerification() {
     }
   };
 
+  const handleVerifyClick = () => {
+    if (otp.join("").length === 6) {
+      // FIXED: Matched path to '/reset'
+      router.push('/reset');
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-white p-4">
       <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
@@ -30,7 +51,6 @@ export default function OTPVerification() {
         {/* Left Side: Illustration */}
         <div className="hidden md:flex justify-center">
           <div className="relative w-full max-w-lg aspect-square">
-            {/* Replace with your actual exported illustration path */}
             <img 
               src="/artwork.jpg" 
               alt="Task Manager Illustration" 
@@ -66,7 +86,7 @@ export default function OTPVerification() {
                 value={data}
                 onChange={(e) => handleChange(e.target, index)}
                 onKeyDown={(e) => handleKeyDown(e, index)}
-                className="w-12 h-12 border border-gray-400 rounded-lg text-center text-xl focus:border-black focus:ring-1 focus:ring-black outline-none transition-all"
+                className="w-12 h-12 border border-gray-400 rounded-lg text-center text-xl focus:border-black focus:ring-1 focus:ring-black outline-none transition-all font-bold"
               />
             ))}
           </div>
@@ -77,10 +97,16 @@ export default function OTPVerification() {
 
           {/* Action Buttons */}
           <div className="w-full max-w-sm space-y-4">
-            <button className="w-full bg-black text-white py-4 rounded-full text-lg font-bold hover:bg-gray-800 transition-colors">
+            <button 
+              onClick={handleVerifyClick}
+              className="w-full bg-black text-white py-4 rounded-full text-lg font-bold hover:bg-gray-800 transition-colors"
+            >
               Verify
             </button>
-            <button className="w-full bg-white text-black py-4 border border-black rounded-full text-lg font-bold hover:bg-gray-50 transition-colors">
+            <button 
+              onClick={() => router.push('/login')}
+              className="w-full bg-white text-black py-4 border border-black rounded-full text-lg font-bold hover:bg-gray-50 transition-colors"
+            >
               Cancel
             </button>
           </div>

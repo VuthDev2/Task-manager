@@ -1,11 +1,28 @@
 "use client";
 import React, { useState } from 'react';
-import { Eye, EyeOff, Lock, CheckCircle2 } from 'lucide-react';
+import { useRouter } from 'next/navigation'; // Added for redirecting to Login
+import { Eye, EyeOff, CheckCircle2 } from 'lucide-react';
 
 export default function ResetPassword() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({ password: '', confirmPassword: '' });
+  const [isSuccess, setIsSuccess] = useState(false); // New state for success
+
+  const handleUpdate = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Check if passwords match and meet length requirements
+    if (formData.password.length >= 8 && formData.password === formData.confirmPassword) {
+      setIsSuccess(true);
+      
+      // Wait 2 seconds so they see the success message, then go to Login
+      setTimeout(() => {
+        router.push('/login');
+      }, 2000);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white p-4 font-sans">
@@ -33,7 +50,7 @@ export default function ResetPassword() {
             <p className="text-gray-500 text-sm">Please choose a strong password you haven't used before.</p>
           </div>
 
-          <form className="space-y-5 w-full max-w-sm">
+          <form onSubmit={handleUpdate} className="space-y-5 w-full max-w-sm">
             {/* New Password Field */}
             <div className="space-y-2">
               <label className="text-sm font-semibold text-gray-700">New Password</label>
@@ -41,7 +58,7 @@ export default function ResetPassword() {
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter a new password"
-                  className="w-full text-gray-400 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-black outline-none transition-all"
+                  className="w-full text-black px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-black outline-none transition-all"
                   onChange={(e) => setFormData({...formData, password: e.target.value})}
                 />
                 <button 
@@ -61,7 +78,7 @@ export default function ResetPassword() {
                 <input
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm your password"
-                  className="w-full text-gray-400 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-black outline-none transition-all"
+                  className="w-full text-black px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-black outline-none transition-all"
                   onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
                 />
                 <button 
@@ -74,7 +91,7 @@ export default function ResetPassword() {
               </div>
             </div>
 
-            {/* Password Requirements Checklist (Optional Professional Touch) */}
+            {/* Password Requirements Checklist */}
             <div className="bg-gray-50 p-4 rounded-xl space-y-2">
               <div className="flex items-center gap-2 text-xs text-gray-600">
                 <CheckCircle2 size={14} className={formData.password.length >= 8 ? "text-green-500" : "text-gray-300"} />
@@ -86,11 +103,21 @@ export default function ResetPassword() {
               </div>
             </div>
 
+            {/* Success Message */}
+            {isSuccess && (
+              <div className="p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-xs text-center font-bold animate-pulse">
+                Password updated successfully! Redirecting...
+              </div>
+            )}
+
             <button 
               type="submit"
-              className="w-full bg-black text-white py-4 rounded-full font-bold hover:bg-gray-800 shadow-lg transition-all active:scale-95"
+              disabled={isSuccess}
+              className={`w-full py-4 rounded-full font-bold shadow-lg transition-all active:scale-95 ${
+                isSuccess ? "bg-gray-400 cursor-not-allowed" : "bg-black text-white hover:bg-gray-800"
+              }`}
             >
-              Update Password
+              {isSuccess ? "Updated!" : "Update Password"}
             </button>
           </form>
         </div>

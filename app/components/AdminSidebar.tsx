@@ -16,27 +16,27 @@ const adminItems = [
   { 
     icon: CheckSquare, 
     label: 'All Tasks', 
-    href: '/dashboard/admin/admin-tasks' 
+    href: '/admin/admin-tasks' 
   },
   { 
     icon: Shapes, 
     label: 'Categories', 
-    href: '/dashboard/admin/admin-cate' 
+    href: '/admin/admin-cate' 
   },
   { 
     icon: Users, 
     label: 'All Users', 
-    href: '/dashboard/admin/admin-users' 
+    href: '/admin/admin-users' 
   },
   { 
     icon: BarChart3, 
     label: 'Reports', 
-    href: '/dashboard/admin/admin-reports' 
+    href: '/admin/admin-reports' 
   },
   { 
     icon: Settings2, 
     label: 'Settings', 
-    href: '/dashboard/admin/admin-setting' 
+    href: '/admin/admin-setting' 
   },
 ];
 

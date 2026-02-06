@@ -13,11 +13,11 @@ import Link from 'next/link';
 import Logo from './Logo'; // Importing your new consistent logo
 
 const menuItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard/user/user-dashboard' },
-  { icon: Calendar, label: 'My Tasks', href: '/dashboard/user/user-tasks' },
-  { icon: Layers, label: 'Categories', href: '/dashboard/user/user-cate' },
-  { icon: Bell, label: 'Notification', href: '/dashboard/user/user-notification' },
-  { icon: Settings, label: 'Settings', href: '/dashboard/user/user-setting' },
+  { icon: LayoutDashboard, label: 'Dashboard', href: '/user/user-dashboard' },
+  { icon: Calendar, label: 'My Tasks', href: '/user/user-tasks' },
+  { icon: Layers, label: 'Categories', href: '/user/user-cate' },
+  { icon: Bell, label: 'Notification', href: '/user/user-notification' },
+  { icon: Settings, label: 'Settings', href: '/user/user-setting' },
 ];
 
 export default function Sidebar() {
