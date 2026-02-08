@@ -72,7 +72,6 @@ export default function AdminSidebar() {
         })}
       </nav>
 
-      {/* Admin Logout - Styled to match User Sidebar "Logout" button */}
       <div className="p-6">
         <button className="flex items-center justify-center gap-2 w-full py-3 border border-gray-200 rounded-xl text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all font-semibold text-sm">
           <LogOut size={18} />

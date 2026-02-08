@@ -6,11 +6,10 @@ import { Linkedin, Facebook, Twitter, Send } from 'lucide-react';
 
 export default function Footer() {
   return (
-    // Match Hero background color and bold border
+
     <footer className="bg-[#F8F9FD] pt-32 pb-16 border-t-2 border-gray-200">
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         
-        {/* CALL TO ACTION HEADER */}
         <div className="text-center mb-24 max-w-3xl mx-auto">
           <h2 className="text-5xl md:text-6xl font-black text-gray-900 tracking-tight mb-8">
             Manage your teams <br /> like never before.
@@ -91,7 +90,7 @@ export default function Footer() {
         <div className="pt-12 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-8">
             <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em]">
-              © 2026 INFINITE · GLOBAL SOLUTIONS
+              © 2026 INFINITE · COPORATE
             </p>
             <div className="hidden md:flex items-center gap-6">
               <Link href="#" className="text-[11px] font-black text-gray-400 hover:text-black uppercase tracking-[0.2em]">Privacy</Link>

@@ -32,7 +32,7 @@ export default function AdminCategories() {
               <input 
                 type="text" 
                 placeholder="Search categories..." 
-                className="pl-10 pr-4 py-2 bg-white rounded-full w-72 border-none shadow-sm focus:ring-2 focus:ring-blue-100 outline-none"
+                className="text-gray-400 pl-10 pr-4 py-2 bg-white rounded-full w-72 border-none shadow-sm focus:ring-2 focus:ring-blue-100 outline-none"
               />
             </div>
             <div className="flex items-center gap-3 border-l pl-6">

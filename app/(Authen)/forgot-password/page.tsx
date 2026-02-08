@@ -41,17 +41,17 @@ export default function ForgotPassword() {
         </div>
 
         {/* Right Side: Form Area */}
-        <div className="flex flex-col space-y-6 px-4 md:px-16">
+        <div className="flex flex-col space-y-6 px-8 md:px-16">
           <div className="mb-4">
-            <Image src="/logo.jpg" alt="Logo" width={150} height={60} className="h-20 w-auto object-contain" />
+            <Image src="/logo.jpg" alt="Logo" width={150} height={60} className="h-20 w-auto mb-7 object-contain" />
           </div>
 
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <div className="bg-gray-100 p-2 rounded-full">
-                <Lock className="w-5 h-5 text-gray-700" />
+                <Lock className="w-5 h-5 mb-5 text-gray-700" />
               </div>
-              <h1 className="text-3xl font-bold text-gray-900">Forgot password?</h1>
+              <h1 className="text-3xl font-bold text-gray-900 mb-5">Forgot password?</h1>
             </div>
             <p className="text-gray-500 text-sm leading-relaxed">
               No worries, we'll send you reset instructions.
@@ -62,12 +62,12 @@ export default function ForgotPassword() {
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">Email address</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" /> 
                 <input
                   type="email"
                   required
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl outline-none"
-                  value={email}
+                  value={email} 
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>

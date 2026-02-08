@@ -13,7 +13,7 @@ export default function Hero() {
           
           {/* LOGO SECTION - BIGGER LOGO */}
           <div className="flex items-center gap-4 group cursor-pointer">
-            {/* Increased from w-10 h-10 to w-16 h-16 */}
+
             <div className="relative w-16 h-16 overflow-hidden flex items-center justify-center">
               <Image 
                 src="/logo.jpg" 
@@ -22,7 +22,7 @@ export default function Hero() {
                 className="object-contain mix-blend-multiply scale-125"
               />
             </div>
-            {/* Increased text size to 2xl to match logo */}
+            
             <span className="text-2xl font-black tracking-tighter text-gray-900">
               INFINITE
             </span>

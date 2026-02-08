@@ -33,7 +33,7 @@ export default function AdminReports() {
               <input 
                 type="text" 
                 placeholder="Search reports..." 
-                className="pl-10 pr-4 py-2 bg-white rounded-full w-64 border-none shadow-sm focus:ring-2 focus:ring-blue-100 outline-none"
+                className="text-gray-400 pl-10 pr-4 py-2 bg-white rounded-full w-64 border-none shadow-sm focus:ring-2 focus:ring-blue-100 outline-none"
               />
             </div>
             <button className="bg-black text-white p-2.5 rounded-xl hover:bg-gray-800 transition-all shadow-md">

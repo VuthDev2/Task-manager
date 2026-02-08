@@ -32,13 +32,13 @@ export default function AdminAllTasks() {
               <input 
                 type="text" 
                 placeholder="Search all project tasks..." 
-                className="pl-10 pr-4 py-2 bg-white rounded-full w-72 border-none shadow-sm focus:ring-2 focus:ring-blue-100 outline-none transition-all"
+                className=" text-gray-400 pl-10 pr-4 py-2 bg-white rounded-full w-72 border-none shadow-sm focus:ring-2 focus:ring-blue-100 outline-none transition-all"
               />
             </div>
             <div className="flex items-center gap-3 border-l pl-6">
               <div className="text-right">
                 <p className="text-sm font-bold text-gray-900">Saravuth</p>
-                <p className="text-[10px] text-gray-400 font-bold uppercase">Web Developer</p>
+                <p className="text-[10px] text-gray-400 font-bold uppercase">Super Admin</p>
               </div>
               <img src="/avatar.png" className="w-10 h-10 rounded-full bg-yellow-400 border-2 border-white shadow-sm" alt="Profile" />
             </div>
