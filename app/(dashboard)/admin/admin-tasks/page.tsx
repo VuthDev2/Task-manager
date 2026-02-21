@@ -1,56 +1,112 @@
 "use client";
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import AdminSidebar from '../../../components/AdminSidebar';
+import AdminHeader from '../../../components/AdminHeder';
 import { 
   Search, 
   Plus, 
-  Calendar as CalendarIcon, 
-  User, 
   MoreVertical,
   CheckCircle2,
   TrendingUp,
-  Clock,
-  AlertCircle
+  X,
+  Edit,
+  Trash2
 } from 'lucide-react';
+import { getAllTasks, getAllUsers, createTaskAsAdmin, updateTaskAsAdmin, deleteTaskAsAdmin } from '@/app/lib/admin-actions';
+
+// Define types based on your Supabase tables
+interface Profile {
+  id: string;
+  email: string;
+  full_name: string | null;
+  role: 'user' | 'admin';
+}
+
+interface Task {
+  id: number;
+  title: string;
+  description: string | null;
+  status: 'pending' | 'in-progress' | 'completed';
+  priority: 'Low' | 'Medium' | 'High' | 'Hard';
+  due_date: string | null;
+  assigned_to: string | null;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+  profiles?: Profile; // joined from tasks_created_by_fkey
+}
 
 export default function AdminAllTasks() {
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [users, setUsers] = useState<Profile[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const filteredTasks = tasks.filter(t =>
+    t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (t.profiles && t.profiles.full_name?.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
+  useEffect(() => {
+    Promise.all([getAllTasks(), getAllUsers()])
+      .then(([tasksData, usersData]) => {
+        setTasks(tasksData);
+        setUsers(usersData);
+      })
+      .catch((err: Error) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const handleDelete = async (id: number) => {
+    if (!confirm('Delete this task?')) return;
+    try {
+      await deleteTaskAsAdmin(id);
+      setTasks(prev => prev.filter(t => t.id !== id));
+    } catch (err) {
+      if (err instanceof Error) alert(err.message);
+      else alert('Failed to delete task');
+    }
+  };
+
+  // Calculate metrics
+  const totalTasks = tasks.length;
+  const inProgress = tasks.filter(t => t.status === 'in-progress').length;
+  const completed = tasks.filter(t => t.status === 'completed').length;
+  const overdue = tasks.filter(t => 
+    t.status !== 'completed' && 
+    t.due_date && new Date(t.due_date) < new Date()
+  ).length;
+
+
+  // Priority color helper
+  const getPriorityColor = (priority: Task['priority']) => {
+    switch(priority) {
+      case 'Hard': return 'bg-rose-500';
+      case 'High': return 'bg-orange-500';
+      default: return 'bg-blue-500';
+    }
+  };
+
+  // Handle image error by hiding the element
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    e.currentTarget.style.display = 'none';
+  };
+
   return (
     <div className="flex min-h-screen bg-[#F3F4F9]">
       <AdminSidebar />
       
       <main className="flex-1 p-8 overflow-y-auto">
-        {/* Header Section */}
-        <header className="flex justify-between items-center mb-10">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">System-Wide Tasks</h1>
-            <p className="text-[10px] text-blue-600 font-black uppercase tracking-[0.2em] mt-1">Admin Control Center</p>
-          </div>
+        <AdminHeader title="All Tasks" />
 
-          <div className="flex items-center gap-6">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-              <input 
-                type="text" 
-                placeholder="Search all project tasks..." 
-                className=" text-gray-400 pl-10 pr-4 py-2 bg-white rounded-full w-72 border-none shadow-sm focus:ring-2 focus:ring-blue-100 outline-none transition-all"
-              />
-            </div>
-            <div className="flex items-center gap-3 border-l pl-6">
-              <div className="text-right">
-                <p className="text-sm font-bold text-gray-900">Saravuth</p>
-                <p className="text-[10px] text-gray-400 font-bold uppercase">Super Admin</p>
-              </div>
-              <img src="/avatar.png" className="w-10 h-10 rounded-full bg-yellow-400 border-2 border-white shadow-sm" alt="Profile" />
-            </div>
-          </div>
-        </header>
-
-        {/* Global Overview Metrics */}
+        {/* Global Overview Metrics (dynamic) */}
         <div className="grid grid-cols-4 gap-4 mb-10">
-          <MetricCard label="Total Tasks" value="156" trend="+12%" color="bg-blue-500" />
-          <MetricCard label="In Progress" value="42" trend="Active" color="bg-indigo-600" />
-          <MetricCard label="Completed" value="110" trend="88%" color="bg-emerald-500" />
-          <MetricCard label="Overdue" value="04" trend="Critical" color="bg-rose-500" />
+          <MetricCard label="Total Tasks" value={totalTasks} trend="All" color="bg-blue-500" />
+          <MetricCard label="In Progress" value={inProgress} trend="Active" color="bg-indigo-600" />
+          <MetricCard label="Completed" value={completed} trend={`${Math.round(completed/totalTasks*100) || 0}%`} color="bg-emerald-500" />
+          <MetricCard label="Overdue" value={overdue} trend="Critical" color="bg-rose-500" />
         </div>
 
         {/* Action & Create Task Bar */}
@@ -59,49 +115,66 @@ export default function AdminAllTasks() {
               <h2 className="text-xl font-bold">Create Task</h2>
               <p className="text-xs text-gray-400 mt-1">Initialize a new system-wide project task</p>
            </div>
-           <button className="bg-white text-black p-3 rounded-2xl hover:scale-110 transition-transform shadow-lg relative z-10">
+           <button 
+             onClick={() => { setEditingTask(null); setIsModalOpen(true); }}
+             className="bg-white text-black p-3 rounded-2xl hover:scale-110 transition-transform shadow-lg relative z-10"
+           >
               <Plus size={24} strokeWidth={3} />
            </button>
-           {/* Decorative UI element */}
            <div className="absolute right-0 top-0 w-32 h-full bg-gradient-to-l from-white/10 to-transparent pointer-events-none" />
         </div>
 
+        {error && <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-xl">{error}</div>}
+
         {/* Task Grid - Bento Box Style */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <ProjectTaskCard 
-            title="Task Manager Project" 
-            assignee="Saravuth" 
-            progress={90} 
-            startDate="10 Jan" 
-            endDate="29 Jan" 
-            priority="Hard"
-            priorityColor="bg-rose-500"
-          />
-          <ProjectTaskCard 
-            title="App UI UX Design" 
-            assignee="Sokun" 
-            progress={30} 
-            startDate="12 Jan" 
-            endDate="25 Jan" 
-            priority="Medium"
-            priorityColor="bg-blue-500"
-          />
-          <ProjectTaskCard 
-            title="Database Migration" 
-            assignee="Dara" 
-            progress={65} 
-            startDate="15 Jan" 
-            endDate="02 Feb" 
-            priority="Low"
-            priorityColor="bg-emerald-500"
-          />
+          {loading ? (
+            <div className="col-span-full text-center py-20 text-gray-400">Loading tasks...</div>
+          ) : filteredTasks.length === 0 ? (
+            <div className="col-span-full text-center py-20 text-gray-400">No tasks found.</div>
+          ) : (
+            filteredTasks.map((task) => (
+              <ProjectTaskCard
+                key={task.id}
+                task={task}
+                onEdit={() => { setEditingTask(task); setIsModalOpen(true); }}
+                onDelete={() => handleDelete(task.id)}
+                getPriorityColor={getPriorityColor}
+              />
+            ))
+          )}
         </div>
       </main>
+
+      {/* Create/Edit Modal */}
+      {isModalOpen && (
+        <TaskModal
+          task={editingTask}
+          users={users}
+          onClose={() => setIsModalOpen(false)}
+          onSubmit={async (formData: FormData) => {
+            try {
+              if (editingTask) {
+                await updateTaskAsAdmin(editingTask.id, formData);
+              } else {
+                await createTaskAsAdmin(formData);
+              }
+              const updated = await getAllTasks();
+              setTasks(updated);
+              setIsModalOpen(false);
+            } catch (err) {
+              if (err instanceof Error) alert(err.message);
+              else alert('An error occurred');
+            }
+          }}
+        />
+      )}
     </div>
   );
 }
 
-function MetricCard({ label, value, trend, color }: any) {
+// Reusable MetricCard (unchanged except types)
+function MetricCard({ label, value, trend, color }: { label: string; value: number; trend: string; color: string }) {
   return (
     <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-white flex flex-col justify-between hover:shadow-md transition-shadow">
       <div className="flex justify-between items-start mb-4">
@@ -118,24 +191,44 @@ function MetricCard({ label, value, trend, color }: any) {
   );
 }
 
-function ProjectTaskCard({ title, assignee, progress, startDate, endDate, priority, priorityColor }: any) {
+// ProjectTaskCard with proper props
+function ProjectTaskCard({ 
+  task, 
+  onEdit, 
+  onDelete, 
+  getPriorityColor 
+}: { 
+  task: Task; 
+  onEdit: () => void; 
+  onDelete: () => void; 
+  getPriorityColor: (priority: Task['priority']) => string;
+}) {
+  const assigneeName = task.profiles?.full_name || task.profiles?.email || 'Unassigned';
+  const progress = task.status === 'completed' ? 100 : task.status === 'in-progress' ? 50 : 25;
+  const priorityColor = getPriorityColor(task.priority);
+
   return (
     <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-white flex flex-col hover:shadow-xl transition-all group">
       <div className="flex justify-between items-start mb-8">
         <div className={`${priorityColor} text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm`}>
-          {priority}
+          {task.priority}
         </div>
-        <button className="text-gray-300 hover:text-gray-900">
-          <MoreVertical size={20} />
-        </button>
+        <div className="flex gap-2">
+          <button onClick={onEdit} className="text-gray-300 hover:text-blue-600">
+            <Edit size={20} />
+          </button>
+          <button onClick={onDelete} className="text-gray-300 hover:text-red-500">
+            <Trash2 size={20} />
+          </button>
+        </div>
       </div>
 
       <div className="flex-1 mb-8">
         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1">Assigned Project</p>
-        <h3 className="text-lg font-bold text-gray-900 leading-tight group-hover:text-blue-600 transition-colors">{title}</h3>
+        <h3 className="text-lg font-bold text-gray-900 leading-tight group-hover:text-blue-600 transition-colors">{task.title}</h3>
         <div className="flex items-center gap-2 mt-3">
            <div className="w-6 h-6 rounded-full bg-yellow-400 border border-white shadow-sm" />
-           <p className="text-xs font-bold text-gray-500">Assignee: <span className="text-gray-900">{assignee}</span></p>
+           <p className="text-xs font-bold text-gray-500">Assignee: <span className="text-gray-900">{assigneeName}</span></p>
         </div>
       </div>
 
@@ -153,13 +246,102 @@ function ProjectTaskCard({ title, assignee, progress, startDate, endDate, priori
         <div className="flex justify-between items-center">
           <div>
             <p className="text-[9px] font-bold text-gray-400 uppercase">Start Date</p>
-            <p className="text-[11px] font-bold text-gray-900">{startDate}</p>
+            <p className="text-[11px] font-bold text-gray-900">{task.created_at ? new Date(task.created_at).toLocaleDateString() : '—'}</p>
           </div>
           <div className="text-right">
-            <p className="text-[9px] font-bold text-gray-400 uppercase">End Date</p>
-            <p className="text-[11px] font-bold text-gray-900">{endDate}</p>
+            <p className="text-[9px] font-bold text-gray-400 uppercase">Due Date</p>
+            <p className="text-[11px] font-bold text-gray-900">{task.due_date || '—'}</p>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+// TaskModal with typed props
+function TaskModal({ 
+  task, 
+  users, 
+  onClose, 
+  onSubmit 
+}: { 
+  task: Task | null; 
+  users: Profile[]; 
+  onClose: () => void; 
+  onSubmit: (formData: FormData) => Promise<void>;
+}) {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    onSubmit(formData);
+  };
+
+  return (
+    <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/40 backdrop-blur-md p-4">
+      <div className="bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl border border-gray-100">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-black text-gray-900">{task ? 'Edit Task' : 'New Task'}</h2>
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full">
+            <X size={20} />
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            name="title"
+            defaultValue={task?.title}
+            placeholder="Task title"
+            required
+            className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-100 outline-none"
+          />
+          <textarea
+            name="description"
+            defaultValue={task?.description || ''}
+            placeholder="Description"
+            rows={3}
+            className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-100 outline-none"
+          />
+          <select
+            name="priority"
+            defaultValue={task?.priority || 'Medium'}
+            className="w-full p-3 border border-gray-200 rounded-xl"
+          >
+            <option>Medium</option>
+            <option>High</option>
+            <option>Hard</option>
+          </select>
+          <select
+            name="status"
+            defaultValue={task?.status || 'pending'}
+            className="w-full p-3 border border-gray-200 rounded-xl"
+          >
+            <option value="pending">Pending</option>
+            <option value="in-progress">In Progress</option>
+            <option value="completed">Completed</option>
+          </select>
+          <input
+            type="date"
+            name="due_date"
+            defaultValue={task?.due_date || ''}
+            className="w-full p-3 border border-gray-200 rounded-xl"
+          />
+          <select
+            name="assigned_to"
+            defaultValue={task?.assigned_to || ''}
+            required
+            className="w-full p-3 border border-gray-200 rounded-xl"
+          >
+            <option value="">Select assignee</option>
+            {users.map(u => (
+              <option key={u.id} value={u.id}>{u.full_name || u.email}</option>
+            ))}
+          </select>
+          <button
+            type="submit"
+            className="w-full bg-black text-white py-4 rounded-2xl font-bold hover:bg-gray-800 transition-all"
+          >
+            {task ? 'Update Task' : 'Create Task'}
+          </button>
+        </form>
       </div>
     </div>
   );

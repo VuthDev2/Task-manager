@@ -8,7 +8,7 @@ export default function Logo() {
         {/* Logo matching your UserDashboard code */}
         <div className="mb-6">
           <img 
-            src="/logo.jpg" 
+            src="/logo.svg" 
             alt="Infinite Corporate" 
             className="h-30 w-auto" 
           />

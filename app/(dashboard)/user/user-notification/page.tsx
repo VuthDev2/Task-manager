@@ -1,6 +1,7 @@
 "use client";
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from '../../../components/Sidebar';
+import UserHeader from '@/app/components/UserHeader';
 import { 
   Bell, 
   Search, 
@@ -10,103 +11,177 @@ import {
   X, 
   MoreHorizontal 
 } from 'lucide-react';
+import { getUserNotifications, markAsRead, markAllAsRead, dismissNotification } from '@/app/lib/notification-actions';
+
+interface Notification {
+  id: number;
+  type: string;
+  sender: string;
+  message: string;
+  is_read: boolean;
+  created_at: string;
+}
 
 export default function Notifications() {
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<'all' | 'unread' | 'archive'>('all');
+
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
+
+  const fetchNotifications = async () => {
+    try {
+      const data = await getUserNotifications();
+      setNotifications(data);
+    } catch (error) {
+      console.error('Failed to load notifications:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleMarkAsRead = async (id: number) => {
+    await markAsRead(id);
+    setNotifications(prev =>
+      prev.map(n => (n.id === id ? { ...n, is_read: true } : n))
+    );
+  };
+
+  const handleMarkAllAsRead = async () => {
+    await markAllAsRead();
+    setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+  };
+
+  const handleDismiss = async (id: number) => {
+    await dismissNotification(id);
+    setNotifications(prev => prev.filter(n => n.id !== id));
+  };
+
+  const filteredNotifications = notifications.filter(n => {
+    if (filter === 'unread') return !n.is_read;
+    if (filter === 'archive') return n.is_read; // or separate archive table – for now treat read as archive
+    return true;
+  });
+
+  const unreadCount = notifications.filter(n => !n.is_read).length;
+
   return (
     <div className="flex min-h-screen bg-[#F3F4F9]">
       <Sidebar />
       
       <main className="flex-1 p-8">
-        {/* Unified Header */}
-        <header className="flex justify-between items-center mb-10">
-          <div className="flex items-center gap-3">
-             <div className="bg-black p-2 rounded-lg text-white">
-                <Bell size={20} />
-             </div>
-             <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Notifications</h1>
-          </div>
-          
-          <div className="flex items-center gap-6">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-              <input 
-                type="text" 
-                placeholder="Search alerts..." 
-                className="text-gray-400 pl-10 pr-4 py-2 bg-white rounded-full w-72 border-none shadow-sm focus:ring-2 focus:ring-blue-100 outline-none" 
-              />
-            </div>
-            <div className="flex items-center gap-3 pl-4 border-l">
-              <div className="text-right">
-                <p className=" font-bold text-gray-950">Saravuth</p>
-                <p className="text-[10px] text-gray-400 font-semibold uppercase">Project Manager</p>
-              </div>
-              <div className="w-10 h-10 bg-yellow-400 rounded-full border-2 border-white shadow-sm" />
-            </div>
-          </div>
-        </header>
+        <UserHeader title="Notifications" />
 
         {/* Filters & Actions */}
         <div className="flex justify-between items-center mb-6 px-2">
           <div className="flex gap-4">
-            <button className="text-sm font-bold text-blue-600 border-b-2 border-blue-600 pb-1">All</button>
-            <button className="text-sm font-medium text-gray-500 hover:text-gray-700 pb-1">Unread</button>
-            <button className="text-sm font-medium text-gray-500 hover:text-gray-700 pb-1">Archive</button>
+            <button
+              onClick={() => setFilter('all')}
+              className={`text-sm font-bold pb-1 ${
+                filter === 'all'
+                  ? 'text-blue-600 border-b-2 border-blue-600'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              All {notifications.length > 0 && `(${notifications.length})`}
+            </button>
+            <button
+              onClick={() => setFilter('unread')}
+              className={`text-sm font-bold pb-1 ${
+                filter === 'unread'
+                  ? 'text-blue-600 border-b-2 border-blue-600'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Unread {unreadCount > 0 && `(${unreadCount})`}
+            </button>
+            <button
+              onClick={() => setFilter('archive')}
+              className={`text-sm font-bold pb-1 ${
+                filter === 'archive'
+                  ? 'text-blue-600 border-b-2 border-blue-600'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Archive
+            </button>
           </div>
-          <button className="text-xs font-bold text-gray-400 hover:text-gray-600 transition-colors">
-            Mark all as read
-          </button>
+          {unreadCount > 0 && (
+            <button
+              onClick={handleMarkAllAsRead}
+              className="text-xs font-bold text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              Mark all as read
+            </button>
+          )}
         </div>
 
         {/* Notifications Feed */}
         <div className="max-w-4xl space-y-4">
-          <NotificationItem 
-            type="new"
-            sender="INFINITE"
-            time="10 mins ago"
-            message="Good morning, Saravuth. Could you please send me the CSV file for the transaction?"
-            statusColor="bg-blue-500"
-          />
-          <NotificationItem 
-            type="task"
-            sender="New Task Assigned"
-            time="25 mins ago"
-            message="You have been assigned to 'UX/UI design for Ice cream shop'. Please review the project brief."
-            statusColor="bg-green-500"
-          />
-          <NotificationItem 
-            type="update"
-            sender="Task Update"
-            time="1 hour ago"
-            message="Mobile App for Car selling app has been updated with 3 new features in the 'BYD 2026' model section."
-            statusColor="bg-orange-500"
-          />
-          <NotificationItem 
-            type="alert"
-            sender="System Alert"
-            time="2 hours ago"
-            message="Task 'Create chess game using Python' has been deleted by the administrator."
-            statusColor="bg-rose-500"
-          />
+          {loading ? (
+            <div className="text-center py-20 text-gray-400">Loading notifications...</div>
+          ) : filteredNotifications.length === 0 ? (
+            <div className="text-center py-20 bg-white/40 rounded-[2.5rem] border-2 border-dashed border-gray-200 font-black text-gray-400 italic">
+              No notifications
+            </div>
+          ) : (
+            filteredNotifications.map((notification) => (
+              <NotificationItem
+                key={notification.id}
+                notification={notification}
+                onMarkRead={() => handleMarkAsRead(notification.id)}
+                onDismiss={() => handleDismiss(notification.id)}
+              />
+            ))
+          )}
         </div>
       </main>
     </div>
   );
 }
 
-function NotificationItem({ type, sender, time, message, statusColor }: any) {
-  // Determine Icon based on type
+// Update NotificationItem to accept real data and handlers
+function NotificationItem({ notification, onMarkRead, onDismiss }: { 
+  notification: Notification; 
+  onMarkRead: () => void; 
+  onDismiss: () => void;
+}) {
   const getIcon = () => {
-    switch(type) {
+    switch (notification.type) {
       case 'new': return <CheckCircle2 size={18} className="text-blue-500" />;
       case 'task': return <RefreshCcw size={18} className="text-green-500" />;
       case 'update': return <AlertCircle size={18} className="text-orange-500" />;
       case 'alert': return <X size={18} className="text-rose-500" />;
-      default: return <Bell size={18} />;
+      default: return <Bell size={18} className="text-gray-500" />;
     }
   };
 
+  const statusColor = 
+    notification.type === 'new' ? 'bg-blue-500' :
+    notification.type === 'task' ? 'bg-green-500' :
+    notification.type === 'update' ? 'bg-orange-500' :
+    notification.type === 'alert' ? 'bg-rose-500' :
+    'bg-gray-500';
+
+  const timeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    if (seconds < 60) return `${seconds}s ago`;
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    return `${days}d ago`;
+  };
+
   return (
-    <div className="bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-all flex items-start gap-4 relative overflow-hidden group border border-transparent hover:border-gray-100">
+    <div className={`bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-all flex items-start gap-4 relative overflow-hidden group border border-transparent hover:border-gray-100 ${
+      notification.is_read ? 'opacity-60' : ''
+    }`}>
       {/* Visual Status Indicator */}
       <div className={`absolute left-0 top-0 bottom-0 w-1 ${statusColor}`} />
       
@@ -116,17 +191,30 @@ function NotificationItem({ type, sender, time, message, statusColor }: any) {
 
       <div className="flex-1">
         <div className="flex justify-between items-center mb-1">
-          <h4 className="font-bold text-gray-900 text-sm tracking-tight">{sender}</h4>
-          <span className="text-[11px] font-bold text-gray-400 uppercase tracking-tighter">{time}</span>
+          <h4 className="font-bold text-gray-900 text-sm tracking-tight">{notification.sender}</h4>
+          <span className="text-[11px] font-bold text-gray-400 uppercase tracking-tighter">
+            {timeAgo(notification.created_at)}
+          </span>
         </div>
         <p className="text-sm text-gray-500 leading-relaxed mb-4">
-          {message}
+          {notification.message}
         </p>
         
         <div className="flex items-center gap-6">
-          <button className="text-xs font-black text-blue-600 hover:underline uppercase tracking-widest">Accept</button>
-          <button className="text-xs font-black text-gray-400 hover:text-gray-600 uppercase tracking-widest">Dismiss</button>
-          <button className="text-xs font-black text-gray-900 hover:underline uppercase tracking-widest">Mark as read</button>
+          {!notification.is_read && (
+            <button
+              onClick={onMarkRead}
+              className="text-xs font-black text-blue-600 hover:underline uppercase tracking-widest"
+            >
+              Mark as read
+            </button>
+          )}
+          <button
+            onClick={onDismiss}
+            className="text-xs font-black text-gray-400 hover:text-gray-600 uppercase tracking-widest"
+          >
+            Dismiss
+          </button>
         </div>
       </div>
 

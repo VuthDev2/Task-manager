@@ -11,6 +11,7 @@ import {
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Logo from './Logo'; // Importing your new consistent logo
+import { logout } from '@/app/lib/auth-actions';
 
 const menuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/user/user-dashboard' },
@@ -62,3 +63,16 @@ export default function Sidebar() {
     </aside>
   );
 }
+
+<button
+  onClick={async () => {
+    const result = await logout();
+    if (result?.error) {
+      alert(result.error);
+    }
+  }}
+  className="flex items-center justify-center gap-2 w-full py-3 border border-gray-200 rounded-xl text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all font-semibold text-sm"
+>
+  <LogOut size={18} />
+  Logout
+</button>
