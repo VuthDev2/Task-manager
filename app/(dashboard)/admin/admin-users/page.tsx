@@ -17,7 +17,6 @@ import {
   Check
 } from 'lucide-react';
 import { getAllUsers, updateUserRole, deleteUser } from '@/app/lib/admin-actions';
-import { users } from '@/drizzle/schema';
 
 // Define the user type based on your profiles table
 interface User {
