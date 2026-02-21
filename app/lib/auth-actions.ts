@@ -142,3 +142,6 @@ export async function updatePassword(formData: FormData) {
   if (error) return { error: error.message };
   return { success: true };
 }
+
+// Add alias for signout (to match import in LoginLogoutButton)
+export const signout = logout;
