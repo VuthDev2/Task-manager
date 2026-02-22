@@ -42,7 +42,7 @@ export default function SignUpPage() {
           {/* Logo */}
           <div className="mb-8">
             <Image 
-              src="/logo.jpg" 
+              src="/logo.svg" 
               alt="Infinite Corporate Logo" 
               width={100} 
               height={40} 

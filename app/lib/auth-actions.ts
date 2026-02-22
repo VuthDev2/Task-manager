@@ -95,15 +95,9 @@ export async function signup(formData: FormData) {
 // LOGOUT ACTION
 export async function logout() {
   const supabase = createClient();
-  
-  try {
-    await supabase.auth.signOut();
-    revalidatePath('/', 'layout');
-    redirect('/login');
-  } catch (error) {
-    console.error('Logout error:', error);
-    return { error: 'Failed to logout' };
-  }
+  await supabase.auth.signOut();
+  revalidatePath('/', 'layout');
+  redirect('/login');
 }
 
 // GOOGLE SIGN-IN ACTION 
@@ -145,3 +139,4 @@ export async function updatePassword(formData: FormData) {
 
 // Add alias for signout (to match import in LoginLogoutButton)
 export const signout = logout;
+

@@ -51,7 +51,7 @@ export default function ForgotPassword() {
           {/* LOGO */}
           <div className="mb-4">
             <Image
-              src="/logo.jpg"
+              src="/logo.svg"
               alt="Logo"
               width={150}
               height={60}

@@ -36,7 +36,7 @@ export default function LoginPage() {
         <div className="w-full max-w-[380px] mb-20 flex flex-col z-50">
           
           <div className="mb-10">
-            <Image src="/logo.jpg" alt="Logo" width={100} height={40} className="object-contain" />
+            <Image src="/logo.svg" alt="Logo" width={100} height={40} className="object-contain" />
           </div>
 
           <h1 className="text-3xl font-black text-black tracking-tighter mb-2 uppercase">

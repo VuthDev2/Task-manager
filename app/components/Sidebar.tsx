@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import Logo from './Logo'; // Importing your new consistent logo
+import Logo from './Logo';
 import { logout } from '@/app/lib/auth-actions';
 
 const menuItems = [
@@ -24,16 +24,18 @@ const menuItems = [
 export default function Sidebar() {
   const pathname = usePathname();
 
+  const handleLogout = async () => {
+    const result = await logout() as unknown as { error?: string } | null;
+    if (result?.error) {
+      alert(result.error);
+    }
+  };
+
   return (
     <aside className="w-64 bg-white flex flex-col border-r border-gray-100 h-screen sticky top-0">
-      
-      {/* FEATURE PRESERVED: Consistent Logo via Logo.tsx */}
       <Logo />
-
-      {/* FEATURE PRESERVED: Dynamic Navigation Links */}
       <nav className="flex-1 mt-4">
         {menuItems.map((item) => {
-          // FEATURE PRESERVED: Active state detection using usePathname
           const isActive = pathname === item.href;
           return (
             <Link 
@@ -45,17 +47,17 @@ export default function Sidebar() {
                   : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
               }`}
             >
-              {/* FEATURE PRESERVED: Icon color shifting on active/hover */}
               <item.icon size={20} className={isActive ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-900'} />
               <span className="font-semibold text-sm">{item.label}</span>
             </Link>
           );
         })}
       </nav>
-
-      {/* FEATURE PRESERVED: Professional Logout with hover states */}
       <div className="p-6">
-        <button className="flex items-center justify-center gap-2 w-full py-3 border border-gray-200 rounded-xl text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all font-semibold text-sm">
+        <button
+          onClick={handleLogout}
+          className="flex items-center justify-center gap-2 w-full py-3 border border-gray-200 rounded-xl text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all font-semibold text-sm"
+        >
           <LogOut size={18} />
           Logout
         </button>
@@ -63,16 +65,3 @@ export default function Sidebar() {
     </aside>
   );
 }
-
-<button
-  onClick={async () => {
-    const result = await logout();
-    if (result?.error) {
-      alert(result.error);
-    }
-  }}
-  className="flex items-center justify-center gap-2 w-full py-3 border border-gray-200 rounded-xl text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all font-semibold text-sm"
->
-  <LogOut size={18} />
-  Logout
-</button>

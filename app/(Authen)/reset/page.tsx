@@ -98,7 +98,7 @@ export default function ResetPassword() {
           {/* LOGO */}
           <div className="mb-4">
             <Image
-              src="/logo.jpg"
+              src="/logo.svg"
               alt="Infinite Corporate"
               width={150}
               height={60}
