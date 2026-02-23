@@ -6,11 +6,12 @@ import { Search, Bell } from 'lucide-react';
 import { getUnreadCount } from '@/app/lib/notification-actions';
 
 interface Profile {
-  id: string;                // added id
+  id: string;
   full_name: string | null;
   role: string | null;
   email?: string;
   avatar_url: string | null;
+  position: string | null; // 👈 added
 }
 
 interface UserHeaderProps {
@@ -30,7 +31,7 @@ export default function UserHeader({ title }: UserHeaderProps) {
       if (!user) return;
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, full_name, role, email, avatar_url')
+        .select('id, full_name, role, email, avatar_url, position') // 👈 include position
         .eq('id', user.id)
         .single();
       if (!error && data) {
@@ -39,7 +40,6 @@ export default function UserHeader({ title }: UserHeaderProps) {
     };
     fetchProfile();
 
-    // Get initial unread count
     const updateCount = async () => {
       const count = await getUnreadCount();
       setUnreadCount(count);
@@ -47,7 +47,28 @@ export default function UserHeader({ title }: UserHeaderProps) {
     updateCount();
   }, []);
 
-  // Real‑time subscription for new notifications
+  // Real‑time subscription for profile updates
+  useEffect(() => {
+    if (!profile?.id) return;
+
+    const channel = supabase
+      .channel('profile-changes')
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'profiles', filter: `id=eq.${profile.id}` },
+        (payload) => {
+          console.log('Profile updated:', payload.new);
+          setProfile(payload.new as Profile);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [profile?.id]);
+
+  // Real‑time subscription for notifications
   useEffect(() => {
     if (!profile?.id) return;
 
@@ -55,28 +76,13 @@ export default function UserHeader({ title }: UserHeaderProps) {
       .channel('notifications')
       .on(
         'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'notifications',
-          filter: `user_id=eq.${profile.id}`,
-        },
-        () => {
-          // New notification arrived – increment count
-          setUnreadCount(prev => prev + 1);
-          // Optional: show a toast notification
-        }
+        { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${profile.id}` },
+        () => setUnreadCount(prev => prev + 1)
       )
       .on(
         'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'notifications',
-          filter: `user_id=eq.${profile.id}`,
-        },
+        { event: 'UPDATE', schema: 'public', table: 'notifications', filter: `user_id=eq.${profile.id}` },
         async () => {
-          // If a notification was marked read, we should refresh the count
           const count = await getUnreadCount();
           setUnreadCount(count);
         }
@@ -97,8 +103,6 @@ export default function UserHeader({ title }: UserHeaderProps) {
     return 'U';
   };
 
-  const avatarSrc = profile?.avatar_url || '/avatar.png';
-
   return (
     <header className="flex justify-between items-center mb-10">
       <h1 className="text-2xl font-black text-gray-900 tracking-tight">{title}</h1>
@@ -112,7 +116,7 @@ export default function UserHeader({ title }: UserHeaderProps) {
             className="text-gray-400 pl-10 pr-4 py-2 bg-white rounded-full w-72 border-none shadow-sm focus:ring-2 focus:ring-indigo-100 outline-none transition-all text-sm font-medium"
           />
         </div>
-        {/* Notification bell with live badge */}
+        {/* Notification bell */}
         <Link href="/user/user-notification" className="relative cursor-pointer hover:scale-110 transition-transform p-2 bg-white rounded-full shadow-sm">
           <Bell size={20} className="text-gray-600" />
           {unreadCount > 0 && (
@@ -126,13 +130,13 @@ export default function UserHeader({ title }: UserHeaderProps) {
           <div className="text-right">
             <p className="text-sm font-black text-gray-900">{profile?.full_name || 'User'}</p>
             <p className="text-[10px] text-gray-400 font-black uppercase tracking-tighter">
-              {profile?.role === 'admin' ? 'Administrator' : 'Project Manager'}
+              {profile?.position || 'Add job title'} {/* 👈 display position */}
             </p>
           </div>
           <div className="w-10 h-10 rounded-full bg-yellow-400 border-2 border-white shadow-sm overflow-hidden flex items-center justify-center font-bold text-gray-800">
-            {!imgError ? (
+            {profile?.avatar_url && !imgError ? (
               <img
-                src={avatarSrc}
+                src={profile.avatar_url}
                 alt="Profile"
                 className="w-full h-full object-cover"
                 onError={() => setImgError(true)}

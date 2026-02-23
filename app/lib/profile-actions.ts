@@ -10,9 +10,10 @@ export async function updateProfile(formData: FormData) {
 
   const fullName = formData.get('full_name') as string;
   const email = formData.get('email') as string;
+  const position = formData.get('position') as string; // new field
 
-  // Update email in auth (will send confirmation email)
-  if (email !== user.email) {
+  // Update email in auth if changed
+  if (email && email !== user.email) {
     const { error: emailError } = await supabase.auth.updateUser({ email });
     if (emailError) throw new Error(emailError.message);
   }
@@ -20,7 +21,11 @@ export async function updateProfile(formData: FormData) {
   // Update profile in public.profiles
   const { error: profileError } = await supabase
     .from('profiles')
-    .update({ full_name: fullName, updated_at: new Date().toISOString() })
+    .update({ 
+      full_name: fullName, 
+      position: position || null, 
+      updated_at: new Date().toISOString() 
+    })
     .eq('id', user.id);
 
   if (profileError) throw new Error(profileError.message);

@@ -13,11 +13,13 @@ export default function Settings() {
     email: string | null;
     role: string | null;
     avatar_url: string | null;
+    position: string | null;
   }>({
     full_name: null,
     email: null,
     role: null,
     avatar_url: null,
+    position: null,
   });
   const [showPassword, setShowPassword] = useState(false);
   const [newPassword, setNewPassword] = useState('');
@@ -39,7 +41,7 @@ export default function Settings() {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('full_name, role, email, avatar_url')
+        .select('full_name, role, email, avatar_url, position')
         .eq('id', user.id)
         .single();
 
@@ -49,6 +51,7 @@ export default function Settings() {
           email: user.email || null,
           role: data.role,
           avatar_url: data.avatar_url,
+          position: data.position,
         });
       }
     };
@@ -95,41 +98,30 @@ export default function Settings() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Create a unique file path: avatars/user-id/timestamp-filename
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
       const filePath = `${user.id}/${fileName}`;
 
-      // Upload to Supabase Storage
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, file);
-
       if (uploadError) throw uploadError;
 
-      // Get public URL
-      const { data: urlData } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(filePath);
-
+      const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(filePath);
       const avatarUrl = urlData.publicUrl;
 
-      // Update profile in database
       const { error: updateError } = await supabase
         .from('profiles')
         .update({ avatar_url: avatarUrl, updated_at: new Date().toISOString() })
         .eq('id', user.id);
-
       if (updateError) throw updateError;
 
-      // Update local state
       setProfile(prev => ({ ...prev, avatar_url: avatarUrl }));
       setProfileSuccess('Profile picture updated');
     } catch (err: any) {
       setProfileError(err.message);
     } finally {
       setUploading(false);
-      // Clear file input
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
@@ -147,7 +139,6 @@ export default function Settings() {
           <div className="md:col-span-1 space-y-6">
             <div className="bg-white p-8 rounded-[2.5rem] shadow-sm flex flex-col items-center text-center border border-white">
               <div className="relative mb-4">
-                {/* Avatar display */}
                 {profile.avatar_url ? (
                   <img
                     src={profile.avatar_url}
@@ -159,7 +150,6 @@ export default function Settings() {
                     {getInitials()}
                   </div>
                 )}
-                {/* Camera button */}
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading}
@@ -167,7 +157,6 @@ export default function Settings() {
                 >
                   <Camera size={14} />
                 </button>
-                {/* Hidden file input */}
                 <input
                   type="file"
                   ref={fileInputRef}
@@ -177,9 +166,13 @@ export default function Settings() {
                 />
               </div>
               <h2 className="font-bold text-lg text-gray-900">{profile.full_name || 'User'}</h2>
-              <p className="text-xs font-bold text-blue-600 uppercase tracking-widest">
-                {profile.role === 'admin' ? 'Administrator' : 'Project Manager'}
+              
+              {/* Display position if set, otherwise show a hint */}
+              <p className="text-sm text-gray-600 mt-1">
+                {profile.position || 'Add job title'}
               </p>
+              
+              {/* Optionally keep the system role small, or remove it */}
               {uploading && <p className="text-xs text-gray-500 mt-2">Uploading...</p>}
             </div>
 
@@ -208,12 +201,16 @@ export default function Settings() {
                 try {
                   await updateProfile(formData);
                   setProfileSuccess('Profile updated');
-                  // Refresh local state
-                  const { data: { user } } = await supabase.auth.getUser();
-                  if (user) {
-                    const fullName = formData.get('full_name') as string;
-                    setProfile(prev => ({ ...prev, full_name: fullName }));
-                  }
+                  // Update local state with new values from the form
+                  const fullName = formData.get('full_name') as string;
+                  const email = formData.get('email') as string;
+                  const position = formData.get('position') as string;
+                  setProfile(prev => ({
+                    ...prev,
+                    full_name: fullName,
+                    email: email || prev.email,
+                    position: position || null,
+                  }));
                 } catch (err: any) {
                   setProfileError(err.message);
                 }
@@ -226,6 +223,19 @@ export default function Settings() {
                       name="full_name"
                       defaultValue={profile.full_name || ''}
                       className="w-full bg-[#F3F4F9] border-none rounded-2xl py-4 pl-12 pr-4 font-semibold text-gray-700 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
+                    />
+                  </div>
+                </div>
+
+                {/* Position / Job Title field */}
+                <div className="space-y-2">
+                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Position / Job Title</label>
+                  <div className="relative">
+                    <input 
+                      name="position"
+                      defaultValue={profile.position || ''}
+                      className="w-full bg-[#F3F4F9] border-none rounded-2xl py-4 pl-4 pr-4 font-semibold text-gray-700 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
+                      placeholder="e.g. Senior Developer"
                     />
                   </div>
                 </div>
