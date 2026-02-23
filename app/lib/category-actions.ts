@@ -2,9 +2,7 @@
 
 import { createClient } from '@/src/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
 
-// GET all categories for current user
 export async function getUserCategories() {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -15,38 +13,31 @@ export async function getUserCategories() {
     .select('*')
     .eq('created_by', user.id)
     .order('created_at', { ascending: false });
-
   if (error) throw new Error(error.message);
   return data;
 }
 
-// CREATE a new category
 export async function createCategory(formData: FormData) {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
   const name = formData.get('name') as string;
-  const projectName = formData.get('project_name') as string;
+  const project_name = formData.get('project_name') as string;
   const description = formData.get('description') as string;
-  const color = formData.get('color') as string || 'bg-blue-500';
-  const icon = formData.get('icon') as string || 'Folder';
+  const color = formData.get('color') as string;
+  const icon = formData.get('icon') as string;
 
-  const { error } = await supabase.from('categories').insert({
-    name,
-    project_name: projectName,
-    description,
-    color,
-    icon,
-    created_by: user.id,
-  });
-
+  const { data, error } = await supabase
+    .from('categories')
+    .insert({ name, project_name, description, color, icon, created_by: user.id })
+    .select()
+    .single();
   if (error) throw new Error(error.message);
   revalidatePath('/user/user-cate');
-  redirect('/user/user-cate');
+  return { success: true, category: data };
 }
 
-// UPDATE a category
 export async function updateCategory(categoryId: number, formData: FormData) {
   const supabase = createClient();
   const updates = {
@@ -55,28 +46,25 @@ export async function updateCategory(categoryId: number, formData: FormData) {
     description: formData.get('description'),
     color: formData.get('color'),
     icon: formData.get('icon'),
-    updated_at: new Date().toISOString(),
   };
-
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('categories')
     .update(updates)
-    .eq('id', categoryId);
-
+    .eq('id', categoryId)
+    .select()
+    .single();
   if (error) throw new Error(error.message);
   revalidatePath('/user/user-cate');
-  redirect('/user/user-cate');
+  return { success: true, category: data };
 }
 
-// DELETE a category
 export async function deleteCategory(categoryId: number) {
   const supabase = createClient();
   const { error } = await supabase
     .from('categories')
     .delete()
     .eq('id', categoryId);
-
   if (error) throw new Error(error.message);
   revalidatePath('/user/user-cate');
+  return { success: true, id: categoryId };
 }
-

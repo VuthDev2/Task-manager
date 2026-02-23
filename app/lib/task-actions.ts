@@ -2,7 +2,6 @@
 
 import { createClient } from '@/src/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
 
 // GET all tasks for current user
 export async function getUserTasks() {
@@ -32,7 +31,7 @@ async function notifyUser(userId: string, type: string, sender: string, message:
   });
 }
 
-// CREATE a new task
+// CREATE a new task (returns the created task)
 export async function createTask(formData: FormData) {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -42,17 +41,21 @@ export async function createTask(formData: FormData) {
   const description = formData.get('description') as string;
   const priority = formData.get('priority') as string;
   const due_date = formData.get('due_date') as string;
-  const assigned_to = formData.get('assigned_to') as string; // read assignee from form
+  const assigned_to = formData.get('assigned_to') as string;
 
-  const { error } = await supabase.from('tasks').insert({
-    title,
-    description,
-    priority,
-    due_date: due_date || null,
-    created_by: user.id,
-    assigned_to: assigned_to || user.id, // default to current user if not provided
-    status: 'pending',
-  });
+  const { data, error } = await supabase
+    .from('tasks')
+    .insert({
+      title,
+      description,
+      priority,
+      due_date: due_date || null,
+      created_by: user.id,
+      assigned_to: assigned_to || user.id,
+      status: 'pending',
+    })
+    .select()
+    .single();
 
   if (error) throw new Error(error.message);
 
@@ -67,18 +70,19 @@ export async function createTask(formData: FormData) {
   }
 
   revalidatePath('/user/user-tasks');
-  redirect('/user/user-tasks');
+  return { success: true, task: data };
 }
 
-// DELETE a task
+// DELETE a task (returns the deleted task id)
 export async function deleteTask(taskId: number) {
   const supabase = createClient();
   const { error } = await supabase.from('tasks').delete().eq('id', taskId);
   if (error) throw new Error(error.message);
   revalidatePath('/user/user-tasks');
+  return { success: true, taskId };
 }
 
-// UPDATE a task
+// UPDATE a task (returns the updated task)
 export async function updateTask(taskId: number, formData: FormData) {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -110,20 +114,20 @@ export async function updateTask(taskId: number, formData: FormData) {
     updated_at: new Date().toISOString(),
   };
 
-  // If assignee field is provided, include it
   if (newAssignee) {
     updates.assigned_to = newAssignee;
   }
 
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('tasks')
     .update(updates)
-    .eq('id', taskId);
+    .eq('id', taskId)
+    .select()
+    .single();
 
   if (error) throw new Error(error.message);
 
   // Notify logic
-  // If assignee changed and new assignee is different from creator
   if (newAssignee && newAssignee !== task.assigned_to) {
     await notifyUser(
       newAssignee,
@@ -132,7 +136,6 @@ export async function updateTask(taskId: number, formData: FormData) {
       `You have been assigned a task: "${title}"`
     );
   } else if (task.assigned_to && task.assigned_to !== user.id) {
-    // Notify current assignee (if not the updater) that task was updated
     await notifyUser(
       task.assigned_to,
       'task_updated',
@@ -142,5 +145,5 @@ export async function updateTask(taskId: number, formData: FormData) {
   }
 
   revalidatePath('/user/user-tasks');
-  redirect('/user/user-tasks');
+  return { success: true, task: data };
 }

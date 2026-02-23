@@ -74,7 +74,7 @@ export default function SignUpPage() {
                 <label className="text-[10px] font-black uppercase text-gray-900 tracking-widest ml-1">First Name</label>
                 <input 
                   name="first-name"
-                  placeholder="Max"
+                  placeholder="First Name"
                   required
                   className="w-full bg-white rounded-xl border border-gray-200 p-3 text-sm font-bold outline-none focus:border-black transition-all shadow-sm placeholder:text-gray-300"
                 />
@@ -83,7 +83,7 @@ export default function SignUpPage() {
                 <label className="text-[10px] font-black uppercase text-gray-900 tracking-widest ml-1">Last Name</label>
                 <input 
                   name="last-name"
-                  placeholder="Robinson"
+                  placeholder="Last Name"
                   required
                   className="w-full bg-white rounded-xl border border-gray-200 p-3 text-sm font-bold outline-none focus:border-black transition-all shadow-sm placeholder:text-gray-300"
                 />
@@ -132,9 +132,9 @@ export default function SignUpPage() {
 
             {/* Divider */}
             <div className="flex items-center gap-4 py-2 mb-1">
-              <div className="h-[1px] flex-1 bg-gray-300"></div>
-              <span className="text-[10px] font-bold text-gray-300 uppercase">Or continue with</span>
-              <div className="h-[1px] flex-1 bg-gray-300"></div>
+              <div className="h-[1px] flex-1 bg-gray-400"></div>
+              <span className="text-[10px] font-bold text-gray-400 uppercase">Or continue with</span>
+              <div className="h-[1px] flex-1 bg-gray-400"></div>
             </div>
 
             {/* Google Sign-In Button - INLINE (same as login page) */}
