@@ -3,13 +3,15 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '../../src/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
+import { createServiceRoleClient } from '../../src/utils/supabase/service-role';
 
 // LOGIN ACTION
 export async function login(formData: FormData) {
-  const supabase = createClient();
-
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
+  const remember = formData.get('remember') === 'on';
+
+  const supabase = createClient(remember);
 
   // Validate input
   if (!email || !password) {
@@ -23,8 +25,12 @@ export async function login(formData: FormData) {
   });
 
   if (error) {
-    return { error: error.message };
-  }
+  const friendlyMessage =
+    error.message === 'Invalid login credentials'
+      ? 'Incorrect email or password.'
+      : error.message;
+  return { error: friendlyMessage };
+}
 
   // Check if email is verified
   if (!data.user.email_confirmed_at) {
@@ -89,7 +95,7 @@ export async function signup(formData: FormData) {
 
   // Revalidate and redirect to verification page
   revalidatePath('/', 'layout');
-  redirect('/forgot-password');
+  redirect('/verify-email');
 }
 
 // LOGOUT ACTION
@@ -139,4 +145,74 @@ export async function updatePassword(formData: FormData) {
 
 // Add alias for signout (to match import in LoginLogoutButton)
 export const signout = logout;
+
+export async function resendVerificationEmail(email: string) {
+  const supabase = createClient();
+  const { error } = await supabase.auth.resend({
+    type: 'signup',
+    email,
+  });
+  if (error) throw new Error(error.message);
+  return { success: true };
+}
+
+
+export async function deleteAccount(formData: FormData) {
+  const supabase = createClient(); // regular client for checking session
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Not authenticated');
+
+  // Verify password (optional but recommended)
+  const password = formData.get('password') as string;
+  if (!password) {
+    return { error: 'Password is required to delete your account.' };
+  }
+
+  // Re-authenticate user with password
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email: user.email!,
+    password,
+  });
+  if (signInError) {
+    return { error: 'Incorrect password. Deletion cancelled.' };
+  }
+
+  // Use service role client for privileged operations
+  const serviceClient = createServiceRoleClient();
+
+  // 1. Delete all tasks where user is creator or assignee
+  await serviceClient
+    .from('tasks')
+    .delete()
+    .or(`created_by.eq.${user.id},assigned_to.eq.${user.id}`);
+
+  // 2. Delete all categories created by user
+  await serviceClient
+    .from('categories')
+    .delete()
+    .eq('created_by', user.id);
+
+  // 3. Delete all notifications for user
+  await serviceClient
+    .from('notifications')
+    .delete()
+    .eq('user_id', user.id);
+
+  // 4. Delete profile (should cascade automatically, but do it explicitly)
+  await serviceClient
+    .from('profiles')
+    .delete()
+    .eq('id', user.id);
+
+  // 5. Finally, delete the auth user itself
+  const { error: deleteError } = await serviceClient.auth.admin.deleteUser(
+    user.id
+  );
+  if (deleteError) throw new Error(deleteError.message);
+
+  // Sign out and redirect to home
+  await supabase.auth.signOut();
+  redirect('/');
+}
+
 

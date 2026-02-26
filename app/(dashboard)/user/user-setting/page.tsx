@@ -5,7 +5,7 @@ import { User, Mail, Lock, EyeOff, Save, ShieldCheck, Camera } from 'lucide-reac
 import UserHeader from '@/app/components/UserHeader';
 import { createClient } from '@/src/utils/supabase/client';
 import { updateProfile } from '@/app/lib/profile-actions';
-import { updatePassword, logout } from '@/app/lib/auth-actions';
+import { updatePassword, logout, deleteAccount } from '@/app/lib/auth-actions';
 
 export default function Settings() {
   const [profile, setProfile] = useState<{
@@ -29,6 +29,10 @@ export default function Settings() {
   const [profileError, setProfileError] = useState('');
   const [profileSuccess, setProfileSuccess] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deletePassword, setDeletePassword] = useState('');
+  const [deleteError, setDeleteError] = useState('');
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const supabase = createClient();
@@ -75,8 +79,11 @@ export default function Settings() {
     }
   };
 
-  const handleLogout = async () => {
-    await logout();
+  const handleGlobalLogout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut({ scope: 'global' });
+    // Redirect to login after signing out
+    window.location.href = '/login';
   };
 
   const getInitials = () => {
@@ -126,15 +133,19 @@ export default function Settings() {
     }
   };
 
+  function handleLogout(event: React.MouseEvent<HTMLButtonElement>): void {
+    handleGlobalLogout();
+  }
+
   return (
     <div className="flex min-h-screen bg-[#F3F4F9]">
       <Sidebar />
-      
+
       <main className="flex-1 p-8">
         <UserHeader title="Settings" />
 
         <div className="max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-8">
-          
+
           {/* Left Column: Profile Summary */}
           <div className="md:col-span-1 space-y-6">
             <div className="bg-white p-8 rounded-[2.5rem] shadow-sm flex flex-col items-center text-center border border-white">
@@ -166,12 +177,12 @@ export default function Settings() {
                 />
               </div>
               <h2 className="font-bold text-lg text-gray-900">{profile.full_name || 'User'}</h2>
-              
+
               {/* Display position if set, otherwise show a hint */}
               <p className="text-sm text-gray-600 mt-1">
                 {profile.position || 'Add job title'}
               </p>
-              
+
               {/* Optionally keep the system role small, or remove it */}
               {uploading && <p className="text-xs text-gray-500 mt-2">Uploading...</p>}
             </div>
@@ -194,7 +205,7 @@ export default function Settings() {
                 <User size={18} className="text-gray-400" />
                 Personal Information
               </h3>
-              
+
               <form action={async (formData) => {
                 setProfileError('');
                 setProfileSuccess('');
@@ -219,7 +230,7 @@ export default function Settings() {
                   <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Full Name</label>
                   <div className="relative">
                     <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                    <input 
+                    <input
                       name="full_name"
                       defaultValue={profile.full_name || ''}
                       className="w-full bg-[#F3F4F9] border-none rounded-2xl py-4 pl-12 pr-4 font-semibold text-gray-700 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
@@ -231,7 +242,7 @@ export default function Settings() {
                 <div className="space-y-2">
                   <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Position / Job Title</label>
                   <div className="relative">
-                    <input 
+                    <input
                       name="position"
                       defaultValue={profile.position || ''}
                       className="w-full bg-[#F3F4F9] border-none rounded-2xl py-4 pl-4 pr-4 font-semibold text-gray-700 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
@@ -244,9 +255,9 @@ export default function Settings() {
                   <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Email Address</label>
                   <div className="relative">
                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                    <input 
+                    <input
                       name="email"
-                      type="email" 
+                      type="email"
                       defaultValue={profile.email || ''}
                       className="w-full bg-[#F3F4F9] border-none rounded-2xl py-4 pl-12 pr-4 font-semibold text-gray-700 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
                     />
@@ -324,17 +335,67 @@ export default function Settings() {
             </div>
 
             {/* Danger Zone */}
-            <div className="bg-rose-50 p-6 rounded-[2rem] border border-rose-100 flex items-center justify-between">
-              <div>
-                <h4 className="font-bold text-rose-600 text-sm">Sign out of all devices</h4>
-                <p className="text-[11px] text-rose-400">Secure your account by ending all active sessions.</p>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="bg-white text-rose-600 px-6 py-2 rounded-xl text-xs font-black shadow-sm hover:bg-rose-600 hover:text-white transition-all uppercase tracking-widest"
-              >
-                Log Out
-              </button>
+            {/* Danger Zone */}
+            <div className="bg-rose-50 p-6 rounded-[2rem] border border-rose-100">
+              <h4 className="font-bold text-rose-600 text-sm mb-2">Delete account</h4>
+              <p className="text-[11px] text-rose-400 mb-4">
+                Permanently delete your account and all associated data. This action cannot be undone.
+              </p>
+
+              {!showDeleteConfirm ? (
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="bg-white text-rose-600 px-6 py-2 rounded-xl text-xs font-black shadow-sm hover:bg-rose-600 hover:text-white transition-all uppercase tracking-widest"
+                >
+                  Delete my account
+                </button>
+              ) : (
+                <div className="space-y-3">
+                  <p className="text-xs text-rose-600 font-medium">
+                    Please enter your password to confirm.
+                  </p>
+                  <input
+                    type="password"
+                    placeholder="Your password"
+                    value={deletePassword}
+                    onChange={(e) => setDeletePassword(e.target.value)}
+                    className="w-full p-2 border border-rose-200 rounded-xl text-sm"
+                  />
+                  {deleteError && (
+                    <p className="text-xs text-red-600">{deleteError}</p>
+                  )}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={async () => {
+                        setDeleteLoading(true);
+                        setDeleteError('');
+                        const formData = new FormData();
+                        formData.append('password', deletePassword);
+                        const result = await deleteAccount(formData);
+                        if (result?.error) {
+                          setDeleteError(result.error);
+                          setDeleteLoading(false);
+                        }
+                        // On success, redirect happens automatically
+                      }}
+                      disabled={deleteLoading}
+                      className="flex-1 bg-rose-600 text-white px-4 py-2 rounded-xl text-xs font-black hover:bg-rose-700 transition disabled:opacity-50"
+                    >
+                      {deleteLoading ? 'Deleting...' : 'Confirm deletion'}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowDeleteConfirm(false);
+                        setDeletePassword('');
+                        setDeleteError('');
+                      }}
+                      className="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-xl text-xs font-black hover:bg-gray-300 transition"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

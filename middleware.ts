@@ -21,7 +21,7 @@ export async function middleware(request: NextRequest) {
   const { data: { session } } = await supabase.auth.getSession()
   const pathname = request.nextUrl.pathname
 
-  const publicRoutes = ['/', '/login', '/signup', '/auth/callback', '/forgot-password', '/reset', '/error']
+  const publicRoutes = ['/', '/login', '/signup', '/auth/callback', '/verify-email', '/forgot-password', '/reset', '/error']
   const isPublic = publicRoutes.includes(pathname)
 
   // 1. Unauthenticated users trying to access protected pages then go to login

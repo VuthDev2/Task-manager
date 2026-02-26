@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { login, signInWithGoogle } from "@/app/lib/auth-actions";
@@ -8,6 +8,15 @@ import { login, signInWithGoogle } from "@/app/lib/auth-actions";
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('confirmed') === 'true') {
+      setSuccessMessage('Email confirmed! You can now log in.');
+      window.history.replaceState({}, '', '/login');
+    }
+  }, []);
 
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
@@ -28,13 +37,13 @@ export default function LoginPage() {
 
   return (
     <div className="flex h-screen w-screen bg-white items-center justify-center p-6 overflow-hidden">
-      
+
       {/* Centered Wrapper */}
       <div className="flex w-full max-w-[1000px] items-center justify-center gap-16 lg:gap-24">
-        
+
         {/* LEFT SIDE: FORM */}
-        <div className="w-full max-w-[380px] mb-20 flex flex-col z-50">
-          
+        <div className="w-full max-w-[380px] mb-22 flex flex-col z-50">
+
           <div className="mb-10">
             <Image src="/logo.svg" alt="Logo" width={100} height={40} className="object-contain" />
           </div>
@@ -46,7 +55,7 @@ export default function LoginPage() {
             Please enter login details below
           </p>
 
-          <form 
+          <form
             className=""
             action={async (formData) => {
               const result = await login(formData);
@@ -57,13 +66,13 @@ export default function LoginPage() {
           >
             {/* Email Field */}
             <div className="space-y-1.5">
-              <label className="text-[10px] font-black uppercase text-gray-900 tracking-widest ml-1">Email</label>
-              <input 
+              <label className="text-[12px] font-black uppercase text-gray-900 tracking-widest ml-2">Email</label>
+              <input
                 name="email"
-                type="email" 
+                type="email"
                 placeholder="Enter the email address"
                 required
-                className="w-full text-gray-500 bg-white rounded-xl border border-gray-200 p-3.5 text-sm font-bold outline-none focus:border-black transition-all shadow-sm"
+                className="w-full mb-2 text-gray-500 bg-white rounded-xl border border-gray-200 p-3.5 text-sm font-bold outline-none focus:border-black transition-all shadow-sm"
               />
             </div>
 
@@ -71,17 +80,22 @@ export default function LoginPage() {
             <div className="space-y-1.5">
               <label className="text-[10px] font-black uppercase text-gray-900 tracking-widest ml-1">Password</label>
               <div className="relative">
-                <input 
+                <input
                   name="password"
-                  type="password" 
+                  type="password"
                   placeholder="Enter the Password"
                   required
-                  className="w-full text-gray-400 bg-white rounded-xl border border-gray-200 p-3.5 text-sm font-bold outline-none focus:border-black transition-all shadow-sm"
+                  className="w-full mb-2 text-gray-400 bg-white rounded-xl border border-gray-200 p-3.5 text-sm font-bold outline-none focus:border-black transition-all shadow-sm"
                 />
               </div>
-              <div className="text-right">
-                <Link href="/forgot-password" className="px-1 text-[10px] mb-250 font-black text-black uppercase hover:underline">
-                  Forgot Password?
+
+              <div className="flex items-center mb-2 justify-between mt-2">
+                <label className="flex items-center gap-2 text-sm text-gray-600">
+                  <input type="checkbox" name="remember" defaultChecked />
+                  Remember me
+                </label>
+                <Link href="/forgot-password" className=" text-black-600 text-[10px] px-1  text-black uppercase hover:underline">
+                  Forgot password?
                 </Link>
               </div>
             </div>
@@ -94,7 +108,7 @@ export default function LoginPage() {
             )}
 
             {/* Submit Button */}
-            <button 
+            <button
               type="submit"
               className="w-full rounded-xl mt-1 bg-black py-4 font-black text-white transition hover:bg-zinc-800 shadow-xl active:scale-[0.98] cursor-pointer"
             >
@@ -148,17 +162,22 @@ export default function LoginPage() {
               </p>
             </div>
           </form>
+          {successMessage && (
+            <div className="bg-green-50 border border-green-200 text-green-700 p-3 rounded text-sm text-center mb-4">
+              {successMessage}
+            </div>
+          )}
         </div>
 
         {/* RIGHT SIDE: IMAGE */}
         <div className="hidden lg:block w-[500px] pointer-events-none select-none">
-          <Image 
-            src="/artwork.jpg" 
+          <Image
+            src="/artwork.jpg"
             alt="Login Illustration"
             width={600}
             height={600}
             className="object-contain"
-            priority 
+            priority
           />
         </div>
 
