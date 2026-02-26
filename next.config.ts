@@ -1,19 +1,16 @@
+import { a } from "framer-motion/client";
 import type { NextConfig } from "next";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  async headers() {
-  return [
-    {
-      source: '/(.*)',
-      headers: [
-        {
-          key: 'Content-Security-Policy',
-          value: "default-src 'self'; connect-src 'self' https://yprwuzewpvcrhljylih.supabase.co; ...",
-        },
-      ],
-    },
-  ];
-},
-};
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: "http://localhost:3000/api/:path*",
+      },
+    ];
+  },
+} satisfies NextConfig;
+
 export default nextConfig;
