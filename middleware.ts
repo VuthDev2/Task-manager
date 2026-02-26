@@ -5,7 +5,10 @@ import { cookies } from 'next/headers'
 
 export async function middleware(request: NextRequest) {
   const res = NextResponse.next()
-  res.headers.set('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';");
+  res.headers.set(
+  'Content-Security-Policy',
+  "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' https://yprwuzewpvrchljpylih.supabase.co data:; connect-src 'self' https://yprwuzewpvrchljpylih.supabase.co wss://yprwuzewpvrchljpylih.supabase.co;"
+);
   const cookieStore = await cookies()
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
