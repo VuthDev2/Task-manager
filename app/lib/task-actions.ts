@@ -42,6 +42,7 @@ export async function createTask(formData: FormData) {
   const priority = formData.get('priority') as string;
   const due_date = formData.get('due_date') as string;
   const assigned_to = formData.get('assigned_to') as string;
+  const category = formData.get('category') as string; // 👈 added
 
   const { data, error } = await supabase
     .from('tasks')
@@ -53,6 +54,7 @@ export async function createTask(formData: FormData) {
       created_by: user.id,
       assigned_to: assigned_to || user.id,
       status: 'pending',
+      category: category || null, // 👈 save category
     })
     .select()
     .single();
@@ -146,4 +148,31 @@ export async function updateTask(taskId: number, formData: FormData) {
 
   revalidatePath('/user/user-tasks');
   return { success: true, task: data };
+}
+
+export async function exportUserData(type: 'tasks' | 'categories' | 'all') {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Not authenticated');
+
+  let data: any = {};
+
+  if (type === 'tasks' || type === 'all') {
+    const { data: tasks } = await supabase
+      .from('tasks')
+      .select('*')
+      .or(`created_by.eq.${user.id},assigned_to.eq.${user.id}`);
+    data.tasks = tasks;
+  }
+
+  if (type === 'categories' || type === 'all') {
+    const { data: categories } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('created_by', user.id);
+    data.categories = categories;
+  }
+
+  // Return as JSON (client can trigger download)
+  return { success: true, data };
 }
