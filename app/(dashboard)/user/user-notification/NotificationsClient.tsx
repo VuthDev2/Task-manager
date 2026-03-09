@@ -2,14 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../../../components/Sidebar';
 import UserHeader from '@/app/components/UserHeader';
-import { 
-  Bell, 
-  Search, 
-  CheckCircle2, 
-  AlertCircle, 
-  RefreshCcw, 
-  X, 
-  MoreHorizontal 
+import {
+  Bell,
+  Search,
+  CheckCircle2,
+  AlertCircle,
+  RefreshCcw,
+  X,
+  MoreHorizontal
 } from 'lucide-react';
 import { markAsRead, markAllAsRead, dismissNotification } from '@/app/lib/notification-actions';
 import { createClient } from '@/src/utils/supabase/client';
@@ -80,7 +80,7 @@ export default function NotificationsClient({ initialNotifications }: { initialN
   return (
     <div className="flex min-h-screen bg-[#F3F4F9]">
       <Sidebar />
-      
+
       <main className="flex-1 p-8">
         <UserHeader title="Notifications" />
 
@@ -89,31 +89,28 @@ export default function NotificationsClient({ initialNotifications }: { initialN
           <div className="flex gap-4">
             <button
               onClick={() => setFilter('all')}
-              className={`text-sm font-bold pb-1 ${
-                filter === 'all'
+              className={`text-sm font-bold pb-1 ${filter === 'all'
                   ? 'text-blue-600 border-b-2 border-blue-600'
                   : 'text-gray-500 hover:text-gray-700'
-              }`}
+                }`}
             >
               All {notifications.length > 0 && `(${notifications.length})`}
             </button>
             <button
               onClick={() => setFilter('unread')}
-              className={`text-sm font-bold pb-1 ${
-                filter === 'unread'
+              className={`text-sm font-bold pb-1 ${filter === 'unread'
                   ? 'text-blue-600 border-b-2 border-blue-600'
                   : 'text-gray-500 hover:text-gray-700'
-              }`}
+                }`}
             >
               Unread {unreadCount > 0 && `(${unreadCount})`}
             </button>
             <button
               onClick={() => setFilter('archive')}
-              className={`text-sm font-bold pb-1 ${
-                filter === 'archive'
+              className={`text-sm font-bold pb-1 ${filter === 'archive'
                   ? 'text-blue-600 border-b-2 border-blue-600'
                   : 'text-gray-500 hover:text-gray-700'
-              }`}
+                }`}
             >
               Archive
             </button>
@@ -150,9 +147,9 @@ export default function NotificationsClient({ initialNotifications }: { initialN
   );
 }
 
-function NotificationItem({ notification, onMarkRead, onDismiss }: { 
-  notification: Notification; 
-  onMarkRead: () => void; 
+function NotificationItem({ notification, onMarkRead, onDismiss }: {
+  notification: Notification;
+  onMarkRead: () => void;
   onDismiss: () => void;
 }) {
   const getIcon = () => {
@@ -165,12 +162,12 @@ function NotificationItem({ notification, onMarkRead, onDismiss }: {
     }
   };
 
-  const statusColor = 
+  const statusColor =
     notification.type === 'new' ? 'bg-blue-500' :
-    notification.type === 'task' ? 'bg-green-500' :
-    notification.type === 'update' ? 'bg-orange-500' :
-    notification.type === 'alert' ? 'bg-rose-500' :
-    'bg-gray-500';
+      notification.type === 'task' ? 'bg-green-500' :
+        notification.type === 'update' ? 'bg-orange-500' :
+          notification.type === 'alert' ? 'bg-rose-500' :
+            'bg-gray-500';
 
   const timeAgo = (dateString: string) => {
     const date = new Date(dateString);
@@ -186,11 +183,10 @@ function NotificationItem({ notification, onMarkRead, onDismiss }: {
   };
 
   return (
-    <div className={`bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-all flex items-start gap-4 relative overflow-hidden group border border-transparent hover:border-gray-100 ${
-      notification.is_read ? 'opacity-60' : ''
-    }`}>
+    <div className={`bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-all flex items-start gap-4 relative overflow-hidden group border border-transparent hover:border-gray-100 ${notification.is_read ? 'opacity-60' : ''
+      }`}>
       <div className={`absolute left-0 top-0 bottom-0 w-1 ${statusColor}`} />
-      
+
       <div className={`p-2 rounded-xl bg-gray-50`}>
         {getIcon()}
       </div>
@@ -205,7 +201,7 @@ function NotificationItem({ notification, onMarkRead, onDismiss }: {
         <p className="text-sm text-gray-500 leading-relaxed mb-4">
           {notification.message}
         </p>
-        
+
         <div className="flex items-center gap-6">
           {!notification.is_read && (
             <button

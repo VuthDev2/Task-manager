@@ -6,7 +6,7 @@ import { redirect } from 'next/navigation';
 
 // ---------- TASKS ----------
 export async function getAllTasks() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from('tasks')
     .select(`
@@ -20,7 +20,7 @@ export async function getAllTasks() {
 }
 
 export async function createTaskAsAdmin(formData: FormData) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const title = formData.get('title') as string;
   const description = formData.get('description') as string;
   const priority = formData.get('priority') as string;
@@ -42,7 +42,7 @@ export async function createTaskAsAdmin(formData: FormData) {
 }
 
 export async function updateTaskAsAdmin(taskId: number, formData: FormData) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const updates = {
     title: formData.get('title'),
     description: formData.get('description'),
@@ -61,7 +61,7 @@ export async function updateTaskAsAdmin(taskId: number, formData: FormData) {
 }
 
 export async function deleteTaskAsAdmin(taskId: number) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { error } = await supabase.from('tasks').delete().eq('id', taskId);
   if (error) throw new Error(error.message);
   revalidatePath('/admin/admin-tasks');
@@ -69,7 +69,7 @@ export async function deleteTaskAsAdmin(taskId: number) {
 
 // ---------- USERS ----------
 export async function getAllUsers() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from('profiles')
     .select('*')
@@ -79,7 +79,7 @@ export async function getAllUsers() {
 }
 
 export async function updateUserRole(userId: string, role: 'user' | 'admin') {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { error } = await supabase
     .from('profiles')
     .update({ role })
@@ -89,7 +89,7 @@ export async function updateUserRole(userId: string, role: 'user' | 'admin') {
 }
 
 export async function deleteUser(userId: string) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { error } = await supabase
     .from('profiles')
     .delete()
@@ -100,7 +100,7 @@ export async function deleteUser(userId: string) {
 
 // ---------- CATEGORIES ----------
 export async function getAllCategories() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from('categories')
     .select('*, profiles!categories_created_by_fkey ( email )')
@@ -110,7 +110,7 @@ export async function getAllCategories() {
 }
 
 export async function createCategoryAsAdmin(formData: FormData) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
@@ -134,7 +134,7 @@ export async function createCategoryAsAdmin(formData: FormData) {
 }
 
 export async function updateCategoryAsAdmin(categoryId: number, formData: FormData) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const updates = {
     name: formData.get('name'),
     project_name: formData.get('project_name'),
@@ -152,7 +152,7 @@ export async function updateCategoryAsAdmin(categoryId: number, formData: FormDa
 }
 
 export async function deleteCategoryAsAdmin(categoryId: number) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { error } = await supabase
     .from('categories')
     .delete()

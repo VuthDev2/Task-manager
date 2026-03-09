@@ -4,7 +4,7 @@ import { createClient } from '@/src/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 
 export async function getPreferences() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
@@ -19,7 +19,7 @@ export async function getPreferences() {
 }
 
 export async function updatePreferences(formData: FormData) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
@@ -45,7 +45,7 @@ export async function updatePreferences(formData: FormData) {
 }
 
 export async function getUserTheme() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return 'light'; // default
 

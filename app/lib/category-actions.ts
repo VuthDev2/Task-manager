@@ -4,7 +4,7 @@ import { createClient } from '@/src/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 
 export async function getUserCategories() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return [];
 
@@ -18,7 +18,7 @@ export async function getUserCategories() {
 }
 
 export async function createCategory(formData: FormData) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
@@ -39,7 +39,7 @@ export async function createCategory(formData: FormData) {
 }
 
 export async function updateCategory(categoryId: number, formData: FormData) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const updates = {
     name: formData.get('name'),
     project_name: formData.get('project_name'),
@@ -59,7 +59,7 @@ export async function updateCategory(categoryId: number, formData: FormData) {
 }
 
 export async function deleteCategory(categoryId: number) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { error } = await supabase
     .from('categories')
     .delete()

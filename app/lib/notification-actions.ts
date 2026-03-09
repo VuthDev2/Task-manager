@@ -4,7 +4,7 @@ import { createClient } from '@/src/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 
 export async function getUserNotifications() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return [];
 
@@ -19,7 +19,7 @@ export async function getUserNotifications() {
 }
 
 export async function markAsRead(notificationId: number) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { error } = await supabase
     .from('notifications')
     .update({ is_read: true })
@@ -30,7 +30,7 @@ export async function markAsRead(notificationId: number) {
 }
 
 export async function markAllAsRead() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return;
 
@@ -45,7 +45,7 @@ export async function markAllAsRead() {
 }
 
 export async function dismissNotification(notificationId: number) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { error } = await supabase
     .from('notifications')
     .delete()
@@ -56,7 +56,7 @@ export async function dismissNotification(notificationId: number) {
 }
 
 export async function getUnreadCount() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return 0;
 

@@ -22,7 +22,7 @@ export const fetchers = {
   notifications: getUserNotifications,
   unreadCount: getUnreadCount,
   profile: async (userId: string) => {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data } = await supabase
       .from('profiles')
       .select('id, full_name, role, email, avatar_url, position')

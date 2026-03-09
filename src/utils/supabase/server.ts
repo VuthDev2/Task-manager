@@ -1,8 +1,8 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
-export function createClient(remember = false) {
-  const cookieStore = cookies();
+export async function createClient(remember = false) {
+  const cookieStore = await cookies();
   const maxAge = remember ? 60 * 60 * 24 * 30 : undefined; // 30 days if remembered
 
   return createServerClient(
@@ -10,22 +10,13 @@ export function createClient(remember = false) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        async get(name: string) {
-          return (await cookieStore).get(name)?.value;
+        getAll() {
+          return cookieStore.getAll();
         },
-        async set(name: string, value: string, options: CookieOptions) {
-          try {
-            (await cookieStore).set({ name, value, ...options, maxAge, path: '/' });
-          } catch {
-            // Ignore errors
-          }
-        },
-        async remove(name: string, options: CookieOptions) {
-          try {
-            (await cookieStore).set({ name, value: '', ...options, maxAge, path: '/' });
-          } catch {
-            // Ignore errors
-          }
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set(name, value, { ...options, maxAge, path: '/' });
+          });
         },
       },
     }

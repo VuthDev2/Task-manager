@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache';
 
 // GET all tasks for current user
 export async function getUserTasks() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return [];
 
@@ -21,7 +21,7 @@ export async function getUserTasks() {
 
 // Helper to create notifications
 async function notifyUser(userId: string, type: string, sender: string, message: string) {
-  const supabase = createClient();
+  const supabase = await createClient();
   await supabase.from('notifications').insert({
     user_id: userId,
     type,
@@ -33,7 +33,7 @@ async function notifyUser(userId: string, type: string, sender: string, message:
 
 // CREATE a new task (returns the created task)
 export async function createTask(formData: FormData) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
@@ -77,7 +77,7 @@ export async function createTask(formData: FormData) {
 
 // DELETE a task (returns the deleted task id)
 export async function deleteTask(taskId: number) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { error } = await supabase.from('tasks').delete().eq('id', taskId);
   if (error) throw new Error(error.message);
   revalidatePath('/user/user-tasks');
@@ -86,7 +86,7 @@ export async function deleteTask(taskId: number) {
 
 // UPDATE a task (returns the updated task)
 export async function updateTask(taskId: number, formData: FormData) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
@@ -151,7 +151,7 @@ export async function updateTask(taskId: number, formData: FormData) {
 }
 
 export async function exportUserData(type: 'tasks' | 'categories' | 'all') {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 

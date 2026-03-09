@@ -126,7 +126,7 @@ export default function AdminSettings() {
   return (
     <div className="flex min-h-screen bg-[#F3F4F9]">
       <AdminSidebar />
-      
+
       <main className="flex-1 p-8">
         {/* Header */}
         <header className="mb-10">
@@ -135,7 +135,7 @@ export default function AdminSettings() {
         </header>
 
         <div className="max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-8">
-          
+
           {/* Left Column: Profile Summary */}
           <div className="md:col-span-1 space-y-6">
             <div className="bg-white p-8 rounded-[2.5rem] shadow-sm flex flex-col items-center text-center border border-white">
@@ -191,7 +191,7 @@ export default function AdminSettings() {
                 <User size={18} className="text-gray-400" />
                 Personal Information
               </h3>
-              
+
               <form action={async (formData) => {
                 setProfileError('');
                 setProfileSuccess('');
@@ -212,7 +212,7 @@ export default function AdminSettings() {
                   <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Full Name</label>
                   <div className="relative">
                     <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                    <input 
+                    <input
                       name="full_name"
                       defaultValue={profile.full_name || ''}
                       className="w-full bg-[#F3F4F9] border-none rounded-2xl py-4 pl-12 pr-4 font-semibold text-gray-700 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
@@ -224,9 +224,9 @@ export default function AdminSettings() {
                   <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Email Address</label>
                   <div className="relative">
                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                    <input 
+                    <input
                       name="email"
-                      type="email" 
+                      type="email"
                       defaultValue={profile.email || ''}
                       className="w-full bg-[#F3F4F9] border-none rounded-2xl py-4 pl-12 pr-4 font-semibold text-gray-700 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
                     />

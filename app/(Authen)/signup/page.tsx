@@ -5,7 +5,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { signup } from "@/app/lib/auth-actions";
 import { signInWithGoogle } from "@/app/lib/auth-actions";
-import { url } from 'inspector/promises';
 
 export default function SignUpPage() {
   const [error, setError] = useState<string | null>(null);
@@ -32,20 +31,20 @@ export default function SignUpPage() {
   return (
     /* Full screen wrapper */
     <div className="flex h-screen w-screen bg-white items-center justify-center p-6 overflow-hidden">
-      
+
       {/* Centered Wrapper */}
       <div className="flex w-full max-w-[1100px] items-center justify-center gap-16 lg:gap-24 relative">
-        
+
         {/* LEFT SIDE: FORM */}
         <div className="w-full max-w-[410px] flex flex-col z-5 mb-20">
-          
+
           {/* Logo */}
           <div className="mb-8">
-            <Image 
-              src="/logo.svg" 
-              alt="Infinite Corporate Logo" 
-              width={100} 
-              height={40} 
+            <Image
+              src="/logo.svg"
+              alt="Infinite Corporate Logo"
+              width={100}
+              height={40}
               className="object-contain"
             />
           </div>
@@ -57,12 +56,12 @@ export default function SignUpPage() {
             Enter your information to create an account
           </p>
 
-          <form 
+          <form
             className="space-y-4"
             action={async (formData) => {
               '';
               const result = await signup(formData);
-              
+
               if (result?.error) {
                 setError(result.error);
               }
@@ -72,7 +71,7 @@ export default function SignUpPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black uppercase text-gray-900 tracking-widest ml-1">First Name</label>
-                <input 
+                <input
                   name="first-name"
                   placeholder="First Name"
                   required
@@ -81,7 +80,7 @@ export default function SignUpPage() {
               </div>
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black uppercase text-gray-900 tracking-widest ml-1">Last Name</label>
-                <input 
+                <input
                   name="last-name"
                   placeholder="Last Name"
                   required
@@ -93,9 +92,9 @@ export default function SignUpPage() {
             {/* Email Field */}
             <div className="space-y-1.5">
               <label className="text-[10px] font-black uppercase text-gray-900 tracking-widest ml-1">Email</label>
-              <input 
+              <input
                 name="email"
-                type="email" 
+                type="email"
                 placeholder="m@example.com"
                 required
                 className="w-full bg-white rounded-xl border border-gray-200 p-3.5 text-sm font-bold outline-none focus:border-black transition-all shadow-sm placeholder:text-gray-300"
@@ -105,9 +104,9 @@ export default function SignUpPage() {
             {/* Password Field */}
             <div className="space-y-1.5">
               <label className="text-[10px] font-black uppercase text-gray-900 tracking-widest ml-1">Password</label>
-              <input 
+              <input
                 name="password"
-                type="password" 
+                type="password"
                 placeholder="••••••••"
                 required
                 minLength={6}
@@ -119,11 +118,16 @@ export default function SignUpPage() {
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-600 p-3 rounded text-sm text-center">
                 {error}
+                {error.includes("log in instead") && (
+                  <Link href="/login" className="block mt-2 font-black underline hover:text-red-700 transition-colors uppercase text-[10px] tracking-widest">
+                    Go to Login
+                  </Link>
+                )}
               </div>
             )}
 
             {/* Main Sign Up Button */}
-            <button 
+            <button
               type="submit"
               className="w-full mb-1 rounded-xl bg-black py-4 font-black text-white transition hover:bg-zinc-800 shadow-xl shadow-gray-200 active:scale-[0.98] cursor-pointer"
             >
@@ -180,13 +184,13 @@ export default function SignUpPage() {
 
         {/* RIGHT SIDE: IMAGE */}
         <div className="hidden lg:block w-[500px] pointer-events-none select-none">
-          <Image 
-            src="/artwork.jpg" 
+          <Image
+            src="/artwork.jpg"
             alt="Sign Up Illustration"
             width={500}
             height={500}
             className="object-contain"
-            priority 
+            priority
           />
         </div>
 

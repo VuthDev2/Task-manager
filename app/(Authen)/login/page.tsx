@@ -4,16 +4,19 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { login, signInWithGoogle } from "@/app/lib/auth-actions";
+import { toast } from 'sonner';
 
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [googleLoading, setGoogleLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('confirmed') === 'true') {
-      setSuccessMessage('Email confirmed! You can now log in.');
+      toast.success('Email confirmed!', {
+        description: 'You can now log in to your account.',
+        duration: 5000,
+      });
       window.history.replaceState({}, '', '/login');
     }
   }, []);
@@ -162,11 +165,6 @@ export default function LoginPage() {
               </p>
             </div>
           </form>
-          {successMessage && (
-            <div className="bg-green-50 border border-green-200 text-green-700 p-3 rounded text-sm text-center mb-4">
-              {successMessage}
-            </div>
-          )}
         </div>
 
         {/* RIGHT SIDE: IMAGE */}

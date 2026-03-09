@@ -15,29 +15,83 @@ export default function ResetPassword() {
   const [success, setIsSuccess] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const supabase = createClient();
+  // Use useMemo to avoid creating a new client on every render
+  const supabase = React.useMemo(() => createClient(), []);
 
   // Exchange the code for a session on page load
   useEffect(() => {
     const handleResetFlow = async () => {
-      const url = new URL(window.location.href);
-      const code = url.searchParams.get('code');
+      try {
+        const currentUrl = window.location.href;
+        const url = new URL(currentUrl);
+        const code = url.searchParams.get('code');
 
-      // If there's a code in the URL, exchange it for a session
-      if (code) {
-        const { error } = await supabase.auth.exchangeCodeForSession(code);
-        if (error) {
-          setError('Invalid or expired reset link. Please request a new one.');
-          console.error('Exchange error:', error);
+        // Manual fragment parsing as a fallback
+        const hash = window.location.hash.substring(1);
+        const params = new URLSearchParams(hash);
+        const accessToken = params.get('access_token');
+        const refreshToken = params.get('refresh_token');
+
+        console.log('--- Reset Flow Debug ---');
+        console.log('Full URL:', currentUrl);
+        console.log('Reset Code (PKCE):', !!code);
+        console.log('Fragment Token:', !!accessToken);
+
+        // 1. If PKCE code exists, exchange it
+        if (code) {
+          console.log('Exchanging PKCE code...');
+          const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+          if (exchangeError) {
+            console.error('Exchange error:', exchangeError);
+            setError(`Link verification failed: ${exchangeError.message}`);
+            setLoading(false);
+            return;
+          }
         }
-      }
 
-      // Now check if we have a session
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      if (sessionError || !session) {
-        setError('Unable to verify your reset link. Please try again.');
+        // 2. If fragment tokens exist, set session manually (Forceful approach)
+        if (accessToken && refreshToken) {
+          console.log('Manually setting session from fragment...');
+          const { error: setError } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken
+          });
+          if (setError) {
+            console.error('Manual setSession error:', setError);
+          }
+        }
+
+        // 3. Final session verification
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+        console.log('Session verified:', !!session);
+
+        if (sessionError) {
+          setError(`Session error: ${sessionError.message}`);
+        } else if (!session) {
+          // One last try: wait for onAuthStateChange
+          const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            if (session) {
+              console.log('Session found via onAuthStateChange event:', event);
+              setLoading(false);
+              subscription.unsubscribe();
+            }
+          });
+
+          // Wait a bit longer
+          await new Promise(r => setTimeout(r, 1000));
+
+          const { data: { session: finalSession } } = await supabase.auth.getSession();
+          if (!finalSession) {
+            setError('Auth session missing! Please try clicking the link in your email again.');
+          }
+        }
+      } catch (err) {
+        console.error('Reset Flow Crash:', err);
+        setError('An unexpected error occurred.');
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     handleResetFlow();
@@ -80,7 +134,7 @@ export default function ResetPassword() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-white p-4 font-sans">
       <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-        
+
         {/* LEFT SIDE: ILLUSTRATION */}
         <div className="hidden md:flex justify-center">
           <Image
@@ -94,7 +148,7 @@ export default function ResetPassword() {
 
         {/* RIGHT SIDE: FORM */}
         <div className="flex flex-col space-y-6 px-4 md:px-16">
-          
+
           {/* LOGO */}
           <div className="mb-4">
             <Image
@@ -201,11 +255,10 @@ export default function ResetPassword() {
             <button
               type="submit"
               disabled={success}
-              className={`w-full py-4 rounded-full font-bold shadow-lg transition-all active:scale-95 ${
-                success
-                  ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-black text-white hover:bg-gray-800'
-              }`}
+              className={`w-full py-4 rounded-full font-bold shadow-lg transition-all active:scale-95 ${success
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-black text-white hover:bg-gray-800'
+                }`}
             >
               {success ? 'Updated!' : 'Update Password'}
             </button>

@@ -4,7 +4,7 @@ import { getAllUsers } from '@/app/lib/user-actions';
 import TasksClient from './TasksClient';
 
 export default async function TasksPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return <div>Not authenticated</div>;
 

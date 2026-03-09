@@ -2,9 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import AdminSidebar from '../../../components/AdminSidebar';
 import AdminHeader from '../../../components/AdminHeder';
-import { 
-  Search, 
-  Plus, 
+import SuccessFeedback from '@/components/SuccessFeedback';
+import { Suspense } from 'react';
+import {
+  Search,
+  Plus,
   MoreVertical,
   CheckCircle2,
   TrendingUp,
@@ -74,15 +76,15 @@ export default function AdminAllTasks() {
   const totalTasks = tasks.length;
   const inProgress = tasks.filter(t => t.status === 'in-progress').length;
   const completed = tasks.filter(t => t.status === 'completed').length;
-  const overdue = tasks.filter(t => 
-    t.status !== 'completed' && 
+  const overdue = tasks.filter(t =>
+    t.status !== 'completed' &&
     t.due_date && new Date(t.due_date) < new Date()
   ).length;
 
 
   // Priority color helper
   const getPriorityColor = (priority: Task['priority']) => {
-    switch(priority) {
+    switch (priority) {
       case 'Hard': return 'bg-rose-500';
       case 'High': return 'bg-orange-500';
       default: return 'bg-blue-500';
@@ -96,8 +98,11 @@ export default function AdminAllTasks() {
 
   return (
     <div className="flex min-h-screen bg-[#F3F4F9]">
+      <Suspense fallback={null}>
+        <SuccessFeedback />
+      </Suspense>
       <AdminSidebar />
-      
+
       <main className="flex-1 p-8 overflow-y-auto">
         <AdminHeader title="All Tasks" />
 
@@ -105,23 +110,23 @@ export default function AdminAllTasks() {
         <div className="grid grid-cols-4 gap-4 mb-10">
           <MetricCard label="Total Tasks" value={totalTasks} trend="All" color="bg-blue-500" />
           <MetricCard label="In Progress" value={inProgress} trend="Active" color="bg-indigo-600" />
-          <MetricCard label="Completed" value={completed} trend={`${Math.round(completed/totalTasks*100) || 0}%`} color="bg-emerald-500" />
+          <MetricCard label="Completed" value={completed} trend={`${Math.round(completed / totalTasks * 100) || 0}%`} color="bg-emerald-500" />
           <MetricCard label="Overdue" value={overdue} trend="Critical" color="bg-rose-500" />
         </div>
 
         {/* Action & Create Task Bar */}
         <div className="bg-[#1A1D21] p-6 rounded-[2rem] text-white flex justify-between items-center mb-10 shadow-xl relative overflow-hidden">
-           <div className="relative z-10">
-              <h2 className="text-xl font-bold">Create Task</h2>
-              <p className="text-xs text-gray-400 mt-1">Initialize a new system-wide project task</p>
-           </div>
-           <button 
-             onClick={() => { setEditingTask(null); setIsModalOpen(true); }}
-             className="bg-white text-black p-3 rounded-2xl hover:scale-110 transition-transform shadow-lg relative z-10"
-           >
-              <Plus size={24} strokeWidth={3} />
-           </button>
-           <div className="absolute right-0 top-0 w-32 h-full bg-gradient-to-l from-white/10 to-transparent pointer-events-none" />
+          <div className="relative z-10">
+            <h2 className="text-xl font-bold">Create Task</h2>
+            <p className="text-xs text-gray-400 mt-1">Initialize a new system-wide project task</p>
+          </div>
+          <button
+            onClick={() => { setEditingTask(null); setIsModalOpen(true); }}
+            className="bg-white text-black p-3 rounded-2xl hover:scale-110 transition-transform shadow-lg relative z-10"
+          >
+            <Plus size={24} strokeWidth={3} />
+          </button>
+          <div className="absolute right-0 top-0 w-32 h-full bg-gradient-to-l from-white/10 to-transparent pointer-events-none" />
         </div>
 
         {error && <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-xl">{error}</div>}
@@ -192,15 +197,15 @@ function MetricCard({ label, value, trend, color }: { label: string; value: numb
 }
 
 // ProjectTaskCard with proper props
-function ProjectTaskCard({ 
-  task, 
-  onEdit, 
-  onDelete, 
-  getPriorityColor 
-}: { 
-  task: Task; 
-  onEdit: () => void; 
-  onDelete: () => void; 
+function ProjectTaskCard({
+  task,
+  onEdit,
+  onDelete,
+  getPriorityColor
+}: {
+  task: Task;
+  onEdit: () => void;
+  onDelete: () => void;
   getPriorityColor: (priority: Task['priority']) => string;
 }) {
   const assigneeName = task.profiles?.full_name || task.profiles?.email || 'Unassigned';
@@ -227,8 +232,8 @@ function ProjectTaskCard({
         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1">Assigned Project</p>
         <h3 className="text-lg font-bold text-gray-900 leading-tight group-hover:text-blue-600 transition-colors">{task.title}</h3>
         <div className="flex items-center gap-2 mt-3">
-           <div className="w-6 h-6 rounded-full bg-yellow-400 border border-white shadow-sm" />
-           <p className="text-xs font-bold text-gray-500">Assignee: <span className="text-gray-900">{assigneeName}</span></p>
+          <div className="w-6 h-6 rounded-full bg-yellow-400 border border-white shadow-sm" />
+          <p className="text-xs font-bold text-gray-500">Assignee: <span className="text-gray-900">{assigneeName}</span></p>
         </div>
       </div>
 
@@ -242,7 +247,7 @@ function ProjectTaskCard({
             <div className={`h-full ${priorityColor} rounded-full transition-all duration-1000`} style={{ width: `${progress}%` }} />
           </div>
         </div>
-        
+
         <div className="flex justify-between items-center">
           <div>
             <p className="text-[9px] font-bold text-gray-400 uppercase">Start Date</p>
@@ -259,15 +264,15 @@ function ProjectTaskCard({
 }
 
 // TaskModal with typed props
-function TaskModal({ 
-  task, 
-  users, 
-  onClose, 
-  onSubmit 
-}: { 
-  task: Task | null; 
-  users: Profile[]; 
-  onClose: () => void; 
+function TaskModal({
+  task,
+  users,
+  onClose,
+  onSubmit
+}: {
+  task: Task | null;
+  users: Profile[];
+  onClose: () => void;
   onSubmit: (formData: FormData) => Promise<void>;
 }) {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

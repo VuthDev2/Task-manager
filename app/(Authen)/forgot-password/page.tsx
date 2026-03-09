@@ -3,13 +3,15 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Mail, Lock } from 'lucide-react';
-import { createClient } from '@/src/utils/supabase/client'; // ✅ adjust path if needed
+import { createClient } from '@/src/utils/supabase/client';
+import { requestPasswordReset } from '@/app/lib/auth-actions';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
 
+  // បង្កើត client ដោយមិនចាំបាច់ប្រើ await
   const supabase = createClient();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -17,14 +19,19 @@ export default function ForgotPassword() {
     setStatus('loading');
     setMessage('');
 
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/reset`,
-    });
+    const trimmedEmail = email.trim();
+    const origin = typeof window !== 'undefined' ? window.location.origin : undefined;
 
-    if (error) {
+    console.log('Attempting password reset for:', trimmedEmail);
+
+    const result = await requestPasswordReset(trimmedEmail, origin);
+
+    if (result.error) {
+      console.error('Reset Error:', result.error);
       setStatus('error');
-      setMessage(error.message);
+      setMessage(result.error);
     } else {
+      console.log('Reset email sent successfully via Resend');
       setStatus('success');
       setMessage('Check your email for the password reset link!');
     }
@@ -33,7 +40,7 @@ export default function ForgotPassword() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-white p-4 font-sans">
       <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-        
+
         {/* LEFT SIDE: ILLUSTRATION */}
         <div className="hidden md:flex justify-center">
           <Image
@@ -47,7 +54,7 @@ export default function ForgotPassword() {
 
         {/* RIGHT SIDE: FORM */}
         <div className="flex flex-col space-y-6 px-8 md:px-16">
-          
+
           {/* LOGO */}
           <div className="mb-4">
             <Image
@@ -62,9 +69,9 @@ export default function ForgotPassword() {
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <div className="bg-gray-100 p-2 rounded-full">
-                <Lock className="w-5 h-5 mb-5 text-gray-700" />
+                <Lock className="w-5 h-5 text-gray-700" />
               </div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-5">Forgot password?</h1>
+              <h1 className="text-3xl font-bold text-gray-900">Forgot password?</h1>
             </div>
             <p className="text-gray-500 text-sm leading-relaxed">
               No worries, we'll send you reset instructions.
@@ -81,6 +88,7 @@ export default function ForgotPassword() {
                 <input
                   type="email"
                   required
+                  placeholder="Enter your email"
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl outline-none focus:border-black focus:ring-1 focus:ring-black transition-all"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -105,17 +113,16 @@ export default function ForgotPassword() {
             <button
               type="submit"
               disabled={status === 'loading' || status === 'success'}
-              className={`w-full py-4 rounded-full font-bold transition-all ${
-                status === 'success'
-                  ? 'bg-gray-200 text-gray-500'
-                  : 'bg-black text-white hover:bg-gray-800 active:scale-95'
-              }`}
+              className={`w-full py-4 rounded-full font-bold transition-all ${status === 'success'
+                ? 'bg-gray-200 text-gray-500'
+                : 'bg-black text-white hover:bg-gray-800 active:scale-95'
+                }`}
             >
               {status === 'loading'
                 ? 'Sending...'
                 : status === 'success'
-                ? 'Email Sent!'
-                : 'Send Reset Link'}
+                  ? 'Email Sent!'
+                  : 'Send Reset Link'}
             </button>
           </form>
 
@@ -131,3 +138,4 @@ export default function ForgotPassword() {
     </div>
   );
 }
+
