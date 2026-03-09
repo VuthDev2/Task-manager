@@ -1,4 +1,7 @@
 "use client";
+import Navbar from '../components/Navbar';
+
+import Footer from '../components/Footer';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -6,19 +9,10 @@ import { motion } from 'framer-motion';
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-white">
-      {/* Simple header (unchanged) */}
-      <header className="border-b border-gray-100 bg-white/80 backdrop-blur-sm fixed top-0 w-full z-10">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="text-xl font-black tracking-tight text-gray-900">
-            INFINITE
-          </Link>
-          <Link href="/" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
-            ← Home
-          </Link>
-        </div>
-      </header>
+      <Navbar />
 
-      <main className="pt-24 pb-20 px-6">
+      <main className="pt-32 pb-20 px-6">
+
         <div className="max-w-7xl mx-auto">
           {/* Hero section (unchanged) */}
           <div className="text-center mb-16">
@@ -81,6 +75,7 @@ export default function AboutPage() {
           </div>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

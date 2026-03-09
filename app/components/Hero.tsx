@@ -6,6 +6,8 @@ import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import { Play, ChevronRight, X } from 'lucide-react';
 import React, { useRef, useEffect, useState } from 'react';
 
+import Navbar from './Navbar';
+
 export default function Hero() {
   const { scrollY } = useScroll();
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -34,12 +36,6 @@ export default function Hero() {
   }, [mounted]);
 
   // Scroll transforms (unchanged)
-  const bgOpacity = useTransform(scrollY, [0, 1000], [0, 0.99]);
-  const backdropBlur = useTransform(scrollY, [0, 1000], [0, 60]);
-  const titleColor = useTransform(scrollY, [0, 1000], ['#fff', '#111827']);
-  const linkColor = useTransform(scrollY, [0, 1000], ['rgba(255,255,255,0.8)', '#4b5563']);
-  const borderColor = useTransform(scrollY, [0, 1000], ['#fff', '#000']);
-  const logoInvert = useTransform(scrollY, [0, 300], [1, 0]);
   const y1 = useTransform(scrollY, [0, 500], [0, 150]);
   const y2 = useTransform(scrollY, [0, 500], [0, -150]);
   const orbOpacity = useTransform(scrollY, [0, 300], [1, 0.9]);
@@ -69,59 +65,9 @@ export default function Hero() {
       <motion.div style={{ y: y1, opacity: orbOpacity }} className="absolute top-20 -left-20 w-72 h-72 bg-indigo-500/30 rounded-full blur-3xl" />
       <motion.div style={{ y: y2 }} className="absolute bottom-0 -right-20 w-96 h-96 bg-purple-500/30 rounded-full blur-3xl" />
 
-      {/* Navigation (unchanged) */}
-      <motion.nav
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="fixed top-0 w-full z-50"
-      >
-        <motion.div
-          style={{ opacity: bgOpacity, backdropFilter: `blur(${backdropBlur}px)` }}
-          className="absolute inset-0 bg-white/80 border-b border-white/20"
-        />
-        <div className="relative max-w-7xl mx-auto px-6 md:px-12 h-20 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 group">
-            <motion.span style={{ color: titleColor }} className="text-xl font-black tracking-tight">INFINITE</motion.span>
-          </Link>
-          <div className="hidden lg:flex items-center gap-8">
-            <Link href="/" className="text-sm font-medium relative group">
-              <motion.span style={{ color: linkColor }}>Home</motion.span>
-              <motion.span style={{ backgroundColor: borderColor }} className="absolute left-0 bottom-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full" />
-            </Link>
-            <Link href="/about" className="text-sm font-medium relative group">
-              <motion.span style={{ color: linkColor }}>About</motion.span>
-              <motion.span style={{ backgroundColor: borderColor }} className="absolute left-0 bottom-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full" />
-            </Link>
-            <Link href="/services" className="text-sm font-medium relative group">
-              <motion.span style={{ color: linkColor }}>Services</motion.span>
-              <motion.span style={{ backgroundColor: borderColor }} className="absolute left-0 bottom-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full" />
-            </Link>
-            <Link href="/features" className="text-sm font-medium relative group">
-              <motion.span style={{ color: linkColor }}>Features</motion.span>
-              <motion.span style={{ backgroundColor: borderColor }} className="absolute left-0 bottom-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full" />
-            </Link>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link href="/login">
-              <motion.span style={{ color: linkColor }} className="text-sm font-medium">Log In</motion.span>
-            </Link>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link href="/signup">
-                <motion.div
-                  style={{
-                    backgroundColor: useTransform(scrollY, [0, 100], ['#fff', '#000']),
-                    color: useTransform(scrollY, [0, 100], ['#000', '#fff']),
-                  }}
-                  className="px-6 py-2.5 rounded-full text-sm font-medium shadow-md"
-                >
-                  Sign Up
-                </motion.div>
-              </Link>
-            </motion.div>
-          </div>
-        </div>
-      </motion.nav>
+      {/* Navigation */}
+      <Navbar />
+
 
       {/* Hero Content */}
       <div className="relative z-20 max-w-7xl mx-auto px-6 md:px-12 pt-32 pb-20 min-h-screen flex items-center">

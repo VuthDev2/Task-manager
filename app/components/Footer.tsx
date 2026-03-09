@@ -21,7 +21,7 @@ export default function Footer() {
           <motion.div {...fadeInUp} className="col-span-1 md:col-span-2">
             <div className="flex items-center gap-3 mb-4">
               <div className="relative w-8 h-8">
-                <Image src="/logo.jpg" alt="Infinite" fill className="object-contain" />
+                <Image src="/logo.svg" alt="Infinite" fill className="object-contain" />
               </div>
               <span className="text-xl font-bold tracking-tight text-gray-900">INFINITE</span>
             </div>
@@ -52,28 +52,28 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-<motion.div
-  initial={{ opacity: 0 }}
-  whileInView={{ opacity: 1 }}
-  viewport={{ once: true }}
-  transition={{ delay: 0.3 }}
-  className="flex flex-col items-center pt-12 mt-12 border-t border-gray-100"
->
-  <p className="text-xs text-gray-400 text-center">
-    © 2026 Infinite. All rights reserved.
-  </p>
-  <div className="flex gap-6 mt-4">
-    <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-black transition">
-      <Linkedin size={18} />
-    </a>
-    <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-black transition">
-      <Twitter size={18} />
-    </a>
-    <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-black transition">
-      <Github size={18} />
-    </a>
-  </div>
-</motion.div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3 }}
+          className="flex flex-col items-center pt-12 mt-12 border-t border-gray-100"
+        >
+          <p className="text-xs text-gray-400 text-center">
+            © 2026 Infinite. All rights reserved.
+          </p>
+          <div className="flex gap-6 mt-4">
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-black transition">
+              <Linkedin size={18} />
+            </a>
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-black transition">
+              <Twitter size={18} />
+            </a>
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-black transition">
+              <Github size={18} />
+            </a>
+          </div>
+        </motion.div>
       </div>
     </footer>
   );
