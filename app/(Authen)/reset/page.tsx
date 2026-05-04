@@ -125,29 +125,31 @@ export default function ResetPassword() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
+      <div className="min-h-screen flex items-center justify-center bg-[#F7F8FC]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white p-4 font-sans">
-      <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+    <div className="min-h-screen flex items-center justify-center bg-[#F7F8FC] p-4 font-sans sm:p-6">
+      <div className="max-w-6xl w-full grid grid-cols-1 gap-8 md:grid-cols-[1.05fr_0.95fr] items-center">
 
         {/* LEFT SIDE: ILLUSTRATION */}
-        <div className="hidden md:flex justify-center">
+        <div className="hidden overflow-hidden rounded-[2.5rem] bg-white p-8 shadow-sm ring-1 ring-gray-100 md:block">
+          <p className="text-xs font-black uppercase tracking-[0.2em] text-indigo-600">Secure Reset</p>
+          <h2 className="mt-3 max-w-md text-4xl font-black leading-tight text-gray-950">Choose a password that protects your workspace.</h2>
           <Image
             src="/artwork.jpg"
             alt="Management Illustration"
             width={500}
             height={500}
-            className="w-full max-w-md object-contain"
+            className="mt-6 w-full max-w-md object-contain"
           />
         </div>
 
         {/* RIGHT SIDE: FORM */}
-        <div className="flex flex-col space-y-6 px-4 md:px-16">
+        <div className="flex flex-col space-y-6 rounded-[2rem] bg-white p-6 shadow-sm ring-1 ring-gray-100 sm:p-8">
 
           {/* LOGO */}
           <div className="mb-4">
@@ -156,7 +158,7 @@ export default function ResetPassword() {
               alt="Infinite Corporate"
               width={150}
               height={60}
-              className="h-20 w-auto object-contain"
+              className="h-14 w-auto object-contain"
             />
           </div>
 
@@ -181,7 +183,7 @@ export default function ResetPassword() {
             </div>
           )}
 
-          <form onSubmit={handleUpdate} className="space-y-5 w-full max-w-sm">
+          <form onSubmit={handleUpdate} className="space-y-5 w-full">
             {/* NEW PASSWORD */}
             <div className="space-y-2">
               <label className="text-sm font-semibold text-gray-700">
@@ -191,7 +193,7 @@ export default function ResetPassword() {
                 <input
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Enter a new password"
-                  className="w-full text-black px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-black outline-none transition-all"
+                  className="w-full text-black px-4 py-3 border border-gray-200 rounded-xl focus:border-black focus:ring-4 focus:ring-gray-100 outline-none transition-all"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={success}
@@ -215,7 +217,7 @@ export default function ResetPassword() {
                 <input
                   type={showConfirmPassword ? 'text' : 'password'}
                   placeholder="Confirm your password"
-                  className="w-full text-black px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-black outline-none transition-all"
+                  className="w-full text-black px-4 py-3 border border-gray-200 rounded-xl focus:border-black focus:ring-4 focus:ring-gray-100 outline-none transition-all"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   disabled={success}
@@ -257,7 +259,7 @@ export default function ResetPassword() {
               disabled={success}
               className={`w-full py-4 rounded-full font-bold shadow-lg transition-all active:scale-95 ${success
                 ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-black text-white hover:bg-gray-800'
+                : 'bg-gray-950 text-white hover:bg-indigo-700'
                 }`}
             >
               {success ? 'Updated!' : 'Update Password'}

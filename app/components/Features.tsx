@@ -42,7 +42,7 @@ const item = {
 
 export default function Features() {
   return (
-    <section id="features" className="bg-white py-32 px-8 relative overflow-hidden">
+    <section id="features" className="bg-white py-20 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Decorative gradient orbs (similar to Hero) */}
       <div className="absolute top-40 -left-20 w-72 h-72 bg-indigo-100/30 rounded-full blur-3xl" />
       <div className="absolute bottom-20 -right-20 w-96 h-96 bg-purple-100/30 rounded-full blur-3xl" />
@@ -53,11 +53,11 @@ export default function Features() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="text-center md:text-left md:flex md:items-end justify-between mb-20"
+          className="text-center md:text-left md:flex md:items-end justify-between gap-8 mb-12 sm:mb-16 lg:mb-20"
         >
           <div className="max-w-2xl">
             <p className="text-sm font-bold text-indigo-600 uppercase tracking-[0.2em] mb-4">Core Capabilities</p>
-            <h2 className="text-5xl md:text-6xl font-black text-gray-900 tracking-tight leading-[1.1]">
+            <h2 className="text-3xl sm:text-4xl md:text-6xl font-black text-gray-900 tracking-tight leading-[1.1]">
               Powerful features for <br /> modern project teams.
             </h2>
           </div>
@@ -71,7 +71,7 @@ export default function Features() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: "-100px" }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+          className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 lg:gap-8"
         >
           {featureData.map((f, i) => {
             const Icon = f.icon;
@@ -80,7 +80,7 @@ export default function Features() {
                 key={i}
                 variants={item}
                 whileHover={{ y: -8, transition: { duration: 0.2 } }}
-                className={`${f.bg} rounded-[2.5rem] p-10 h-[500px] border border-white/50 shadow-lg backdrop-blur-sm flex flex-col hover:shadow-2xl transition-all duration-500 group overflow-hidden relative`}
+                className={`${f.bg} rounded-[2rem] lg:rounded-[2.5rem] p-6 sm:p-8 lg:p-10 min-h-[430px] lg:h-[500px] border border-white/50 shadow-lg backdrop-blur-sm flex flex-col hover:shadow-2xl transition-all duration-500 group overflow-hidden relative`}
               >
                 {/* Inner glass layer */}
                 <div className="absolute inset-0 bg-white/40 backdrop-blur-[2px] rounded-[2.5rem] pointer-events-none" />
@@ -98,7 +98,7 @@ export default function Features() {
                   initial={{ y: 20 }}
                   whileHover={{ y: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="relative z-10 mt-auto bg-white/80 backdrop-blur-md rounded-2xl h-56 shadow-lg border border-white/50 p-6"
+                  className="relative z-10 mt-auto bg-white/80 backdrop-blur-md rounded-2xl h-52 sm:h-56 shadow-lg border border-white/50 p-5 sm:p-6"
                 >
                   <div className="flex justify-between items-center mb-6">
                     <div className="flex gap-2">

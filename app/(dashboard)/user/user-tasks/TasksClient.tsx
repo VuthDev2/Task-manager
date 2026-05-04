@@ -1,7 +1,7 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Sidebar from '../../../components/Sidebar';
-import { Search, Bell, Plus, ChevronDown, X, Trash2, Edit } from 'lucide-react';
+import { CalendarDays, CheckCircle2, Clock3, Edit, ListFilter, Plus, Search, Trash2, X } from 'lucide-react';
 import { createTask, updateTask, deleteTask } from '@/app/lib/task-actions';
 import UserHeader from '@/app/components/UserHeader';
 
@@ -29,15 +29,6 @@ interface User {
   id: string;
   email: string;
   full_name: string | null;
-}
-
-// FilterPill component
-function FilterPill({ label }: { label: string }) {
-  return (
-    <div className="bg-white/80 px-4 py-1.5 rounded-xl flex items-center gap-2 text-[13px] font-black text-gray-700 shadow-sm border border-gray-100 pointer-events-none">
-      {label} <ChevronDown size={14} className="text-gray-400" />
-    </div>
-  );
 }
 
 export default function TasksClient({
@@ -105,36 +96,42 @@ export default function TasksClient({
     }
   };
 
-  // Filter tasks
-  const filteredTasks = tasks.filter(task => {
+  const filteredTasks = useMemo(() => tasks.filter(task => {
     const matchesSearch = task.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesPriority = filterPriority === 'All' || task.priority === filterPriority;
     const matchesCategory = filterCategory === 'All' || task.category === filterCategory;
     const matchesStatus = filterStatus === 'All' || task.status === filterStatus;
     return matchesSearch && matchesPriority && matchesCategory && matchesStatus;
-  });
+  }), [tasks, searchQuery, filterPriority, filterCategory, filterStatus]);
+
+  const taskStats = useMemo(() => ({
+    total: tasks.length,
+    pending: tasks.filter(task => task.status === 'pending').length,
+    inProgress: tasks.filter(task => task.status === 'in-progress').length,
+    completed: tasks.filter(task => task.status === 'completed').length,
+  }), [tasks]);
 
   const getPriorityColor = (priority: string | null) => {
     switch (priority) {
-      case 'Hard': return 'bg-purple-500';
-      case 'High': return 'bg-orange-500';
-      default: return 'bg-blue-500';
+      case 'Hard': return 'bg-rose-50 text-rose-700 ring-rose-100';
+      case 'High': return 'bg-amber-50 text-amber-700 ring-amber-100';
+      default: return 'bg-blue-50 text-blue-700 ring-blue-100';
     }
   };
 
   return (
-    <div className="flex min-h-screen bg-[#F3F4F9] font-sans">
+    <div className="flex min-h-screen bg-[#F6F7FB] font-sans">
       <Sidebar />
-      <main className="flex-1 p-8">
+      <main className="flex-1 p-4 sm:p-6 lg:p-8">
         <UserHeader title="My Tasks" />
 
-        {/* Action Bar */}
-        <div className="flex flex-col gap-6 mb-8">
-          <div className="flex justify-between items-end">
-            <div className="space-y-1">
-              <h2 className="text-lg font-black text-gray-800">Tasks list</h2>
-              <p className="text-sm font-bold text-gray-500">
-                You have {filteredTasks.length} tasks for today
+        <section className="mb-6 rounded-[1.75rem] border border-gray-100 bg-white p-6 shadow-sm">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-indigo-600">Task Queue</p>
+              <h2 className="mt-3 text-2xl font-black tracking-tight text-gray-950">Plan, filter, and update work.</h2>
+              <p className="mt-2 max-w-2xl text-sm leading-7 text-gray-500">
+                Keep this list tight: search quickly, filter by priority or category, and update status as work moves.
               </p>
             </div>
             <button
@@ -142,33 +139,38 @@ export default function TasksClient({
                 setEditingTask(null);
                 setIsModalOpen(true);
               }}
-              className="bg-black text-white px-6 py-3 rounded-2xl flex items-center gap-3 hover:bg-gray-800 transition-all shadow-lg active:scale-95"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-gray-950 px-6 py-3 text-sm font-black text-white shadow-lg transition hover:bg-indigo-700"
             >
-              <span className="font-black">Create Task</span>
-              <div className="bg-white/20 p-1 rounded-lg">
-                <Plus size={20} />
-              </div>
+              <Plus size={18} />
+              Create Task
             </button>
           </div>
 
-          {/* Filter pills */}
-          <div className="bg-[#D1E9ED]/50 backdrop-blur-sm p-2 rounded-2xl flex items-center gap-3 border border-[#B8DDE3] flex-wrap">
-            <div className="flex-1 relative ml-2 min-w-[200px]">
-              <Search size={16} className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-500" />
+          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <QueueMetric label="Total" value={taskStats.total} icon={ListFilter} />
+            <QueueMetric label="Pending" value={taskStats.pending} icon={Clock3} />
+            <QueueMetric label="In Progress" value={taskStats.inProgress} icon={CalendarDays} />
+            <QueueMetric label="Completed" value={taskStats.completed} icon={CheckCircle2} />
+          </div>
+        </section>
+
+        <section className="mb-6 rounded-[1.5rem] border border-gray-100 bg-white p-4 shadow-sm">
+          <div className="grid gap-3 lg:grid-cols-[1fr_auto_auto_auto] lg:items-center">
+            <div className="relative">
+              <Search size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Quick search tasks..."
-                className="w-full bg-transparent pl-6 pr-4 py-2 outline-none text-sm font-bold text-gray-700 placeholder:text-gray-500"
+                className="w-full rounded-2xl border border-gray-100 bg-gray-50 py-3 pl-11 pr-4 text-sm font-semibold text-gray-700 outline-none transition focus:border-gray-950 focus:bg-white focus:ring-4 focus:ring-gray-100"
               />
             </div>
 
-            {/* Priority filter */}
-            <div className="relative">
-              <FilterPill label={filterPriority === 'All' ? 'Priority' : filterPriority} />
+            <label className="relative">
+              <span className="sr-only">Priority</span>
               <select
-                className="absolute inset-0 opacity-0 cursor-pointer w-full"
+                className="w-full rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm font-black text-gray-700 outline-none transition focus:border-gray-950 focus:bg-white lg:w-44"
                 onChange={(e) => setFilterPriority(e.target.value)}
                 value={filterPriority}
               >
@@ -177,13 +179,12 @@ export default function TasksClient({
                 <option value="High">High</option>
                 <option value="Medium">Medium</option>
               </select>
-            </div>
+            </label>
 
-            {/* Category filter */}
-            <div className="relative">
-              <FilterPill label={filterCategory === 'All' ? 'Category' : filterCategory} />
+            <label className="relative">
+              <span className="sr-only">Category</span>
               <select
-                className="absolute inset-0 opacity-0 cursor-pointer w-full"
+                className="w-full rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm font-black text-gray-700 outline-none transition focus:border-gray-950 focus:bg-white lg:w-48"
                 onChange={(e) => setFilterCategory(e.target.value)}
                 value={filterCategory}
               >
@@ -192,13 +193,12 @@ export default function TasksClient({
                   <option key={cat.id} value={cat.name}>{cat.name}</option>
                 ))}
               </select>
-            </div>
+            </label>
 
-            {/* Status filter */}
-            <div className="relative">
-              <FilterPill label={filterStatus === 'All' ? 'Status' : filterStatus} />
+            <label className="relative">
+              <span className="sr-only">Status</span>
               <select
-                className="absolute inset-0 opacity-0 cursor-pointer w-full"
+                className="w-full rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm font-black text-gray-700 outline-none transition focus:border-gray-950 focus:bg-white lg:w-44"
                 onChange={(e) => setFilterStatus(e.target.value)}
                 value={filterStatus}
               >
@@ -207,24 +207,16 @@ export default function TasksClient({
                 <option value="in-progress">In Progress</option>
                 <option value="completed">Completed</option>
               </select>
-            </div>
+            </label>
           </div>
-        </div>
-
-        {/* Table Headers */}
-        <div className="grid grid-cols-12 px-6 mb-4 text-gray-400 font-black text-[11px] uppercase tracking-[0.2em]">
-          <div className="col-span-5">Task Details</div>
-          <div className="col-span-2 text-center">Due Date</div>
-          <div className="col-span-2 text-center">Priority</div>
-          <div className="col-span-2 text-center">Category</div>
-          <div className="col-span-1 text-right">Actions</div>
-        </div>
+        </section>
 
         {/* Tasks List */}
         <div className="space-y-3">
           {filteredTasks.length === 0 ? (
-            <div className="py-20 text-center bg-white/40 rounded-[2.5rem] border-2 border-dashed border-gray-200 font-black text-gray-400 italic">
-              No tasks found. Create one!
+            <div className="rounded-[2rem] border border-dashed border-gray-200 bg-white py-20 text-center shadow-sm">
+              <p className="text-lg font-black text-gray-900">No tasks found</p>
+              <p className="mt-2 text-sm font-semibold text-gray-400">Adjust filters or create a new task.</p>
             </div>
           ) : (
             filteredTasks.map((task) => (
@@ -257,35 +249,48 @@ export default function TasksClient({
 // TaskItem component (unchanged from your original)
 function TaskItem({ task, onDelete, onEdit, getPriorityColor }: any) {
   return (
-    <div className="bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition-all flex items-center relative overflow-hidden group border border-transparent hover:border-gray-100">
-      <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-black" />
-      <div className="grid grid-cols-12 w-full items-center">
-        <div className="col-span-5 pl-6">
-          <h4 className="font-black text-gray-900 group-hover:text-indigo-600 transition-colors">{task.title}</h4>
-          <p className="text-xs text-gray-400 font-black">{task.description || ''}</p>
+    <div className="rounded-[1.5rem] border border-gray-100 bg-white p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md sm:p-5">
+      <div className="grid gap-4 lg:grid-cols-[1fr_auto_auto_auto] lg:items-center">
+        <div className="min-w-0">
+          <div className="mb-2 flex flex-wrap items-center gap-2">
+            <span className="rounded-full bg-gray-100 px-3 py-1 text-[10px] font-black uppercase text-gray-500">
+              {task.status === 'in-progress' ? 'In Progress' : task.status}
+            </span>
+            <span className={`rounded-full px-3 py-1 text-[10px] font-black uppercase ring-1 ${getPriorityColor(task.priority)}`}>
+              {task.priority}
+            </span>
+          </div>
+          <h4 className="truncate font-black text-gray-950">{task.title}</h4>
+          <p className="mt-1 line-clamp-1 text-sm font-semibold text-gray-400">{task.description || 'No description added'}</p>
         </div>
-        <div className="col-span-2 text-center">
-          <span className="text-xs font-black text-gray-600 bg-gray-50 px-3 py-1 rounded-lg">
+        <div className="flex items-center gap-2 rounded-2xl bg-gray-50 px-4 py-3 text-sm font-bold text-gray-600 lg:min-w-36">
+          <CalendarDays size={16} className="text-gray-400" />
             {task.due_date || 'No date'}
-          </span>
         </div>
-        <div className="col-span-2 flex justify-center">
-          <span className={`text-[10px] font-black uppercase px-3 py-1 rounded-full text-white ${getPriorityColor(task.priority)}`}>
-            {task.priority}
-          </span>
-        </div>
-        <div className="col-span-2 text-center text-xs font-black text-gray-400 uppercase tracking-widest">
+        <div className="rounded-2xl bg-gray-50 px-4 py-3 text-sm font-bold text-gray-500 lg:min-w-40">
           #{task.category || 'Uncategorized'}
         </div>
-        <div className="col-span-1 flex justify-end gap-2 pr-4">
-          <button onClick={onEdit} className="text-gray-300 hover:text-blue-600 transition-colors p-1" title="Edit Task">
+        <div className="flex justify-end gap-2">
+          <button onClick={onEdit} className="rounded-xl border border-gray-100 p-2 text-gray-400 hover:border-blue-100 hover:bg-blue-50 hover:text-blue-600" title="Edit Task">
             <Edit size={20} />
           </button>
-          <button onClick={onDelete} className="text-gray-300 hover:text-red-500 transition-colors p-1" title="Delete Task">
+          <button onClick={onDelete} className="rounded-xl border border-gray-100 p-2 text-gray-400 hover:border-red-100 hover:bg-red-50 hover:text-red-600" title="Delete Task">
             <Trash2 size={20} />
           </button>
         </div>
       </div>
+    </div>
+  );
+}
+
+function QueueMetric({ label, value, icon: Icon }: { label: string; value: number; icon: React.ElementType }) {
+  return (
+    <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4">
+      <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-white text-gray-700 shadow-sm">
+        <Icon size={18} />
+      </div>
+      <p className="text-2xl font-black text-gray-950">{value}</p>
+      <p className="mt-1 text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">{label}</p>
     </div>
   );
 }

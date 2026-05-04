@@ -3,7 +3,7 @@ import Navbar from '../components/Navbar';
 
 import Footer from '../components/Footer';
 import Link from 'next/link';
-import { CheckCircle } from 'lucide-react';
+import { ArrowRight, BarChart3, CheckCircle, MessageSquareText, PlugZap, Rows3 } from 'lucide-react';
 
 export default function ServicesPage() {
   // ... (services remain same)
@@ -12,73 +12,89 @@ export default function ServicesPage() {
       title: 'Project Management',
       description: 'Plan, track, and deliver projects with ease. Kanban boards, timelines, and task dependencies all in one place.',
       features: ['Custom workflows', 'Milestone tracking', 'Resource allocation'],
+      icon: Rows3,
     },
     {
       title: 'Team Collaboration',
       description: 'Keep everyone on the same page with real‑time updates, comments, and file sharing.',
       features: ['Team chat', 'File attachments', 'Mentions & notifications'],
+      icon: MessageSquareText,
     },
     {
       title: 'Analytics & Reporting',
       description: 'Get insights into your team’s productivity with custom reports and dashboards.',
       features: ['Burndown charts', 'Velocity tracking', 'Exportable reports'],
+      icon: BarChart3,
     },
     {
       title: 'Integrations',
       description: 'Connect with the tools you already use, like Slack, GitHub, and Google Calendar.',
       features: ['Two‑way sync', 'Webhooks', 'API access'],
+      icon: PlugZap,
     },
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#F7F8FC]">
       <Navbar />
 
-      <main className="pt-32 pb-20 px-6">
+      <main className="px-4 pb-20 pt-32 sm:px-6 lg:px-8">
 
         <div className="max-w-7xl mx-auto">
-          {/* Hero */}
-          <div className="text-center mb-16">
-            <h1 className="text-5xl md:text-6xl font-black text-gray-900 tracking-tight mb-6">
-              Services we offer
+          <section className="mb-8 grid gap-8 rounded-[2rem] bg-white p-6 shadow-sm ring-1 ring-gray-100 sm:p-10 lg:grid-cols-[1fr_auto] lg:items-end lg:rounded-[2.5rem] lg:p-14">
+            <div>
+              <p className="mb-4 text-xs font-black uppercase tracking-[0.22em] text-indigo-600">Services</p>
+              <h1 className="max-w-4xl text-4xl font-black leading-[1.05] tracking-tight text-gray-950 sm:text-6xl">
+                Professional support for better project delivery.
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Everything your team needs to stay productive and focused.
+              <p className="mt-6 max-w-2xl text-base leading-8 text-gray-600 sm:text-lg">
+                Organize projects, improve collaboration, measure momentum, and connect the tools your team already uses.
             </p>
-          </div>
+            </div>
+            <Link
+              href="/signup"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-gray-950 px-7 py-4 text-sm font-black text-white shadow-lg transition hover:bg-indigo-700"
+            >
+              Start free <ArrowRight size={18} />
+            </Link>
+          </section>
 
-          {/* Services grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {services.map((service, idx) => (
+          <section className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {services.map((service) => {
+              const Icon = service.icon;
+              return (
               <div
-                key={idx}
-                className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-all"
+                key={service.title}
+                className="rounded-[1.5rem] bg-white p-6 shadow-sm ring-1 ring-gray-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:p-8"
               >
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">{service.title}</h3>
-                <p className="text-gray-600 mb-6">{service.description}</p>
-                <ul className="space-y-2">
+                <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl bg-gray-950 text-white">
+                  <Icon size={22} />
+                </div>
+                <h3 className="text-2xl font-black text-gray-950 mb-3">{service.title}</h3>
+                <p className="text-sm leading-7 text-gray-500 mb-6">{service.description}</p>
+                <ul className="space-y-3">
                   {service.features.map((feature, i) => (
-                    <li key={i} className="flex items-center gap-2 text-gray-500">
+                    <li key={i} className="flex items-center gap-2 text-sm font-bold text-gray-600">
                       <CheckCircle size={18} className="text-green-500" />
                       <span>{feature}</span>
                     </li>
                   ))}
                 </ul>
               </div>
-            ))}
-          </div>
+              );
+            })}
+          </section>
 
-          {/* CTA */}
-          <div className="mt-20 text-center bg-gradient-to-r from-indigo-50 to-purple-50 p-12 rounded-3xl">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Ready to get started?</h2>
-            <p className="text-gray-600 mb-8">Join thousands of teams using Infinite to manage their work.</p>
+          <section className="mt-8 rounded-[2rem] bg-gray-950 p-6 text-center text-white shadow-sm sm:p-10">
+            <h2 className="text-3xl font-black">Ready to get started?</h2>
+            <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-white/65">Join teams using Infinite to manage work with cleaner planning, faster updates, and better visibility.</p>
             <Link
               href="/signup"
-              className="inline-block bg-black text-white px-8 py-4 rounded-full font-medium hover:bg-gray-800 transition-all shadow-lg"
+              className="mt-8 inline-flex items-center justify-center gap-2 rounded-full bg-white px-8 py-4 text-sm font-black text-gray-950 transition hover:bg-indigo-100"
             >
-              Start your free trial
+              Start your free trial <ArrowRight size={18} />
             </Link>
-          </div>
+          </section>
         </div>
       </main>
       <Footer />

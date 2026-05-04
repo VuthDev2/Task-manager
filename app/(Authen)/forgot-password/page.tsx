@@ -3,16 +3,12 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Mail, Lock } from 'lucide-react';
-import { createClient } from '@/src/utils/supabase/client';
 import { requestPasswordReset } from '@/app/lib/auth-actions';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
-
-  // បង្កើត client ដោយមិនចាំបាច់ប្រើ await
-  const supabase = createClient();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,22 +34,24 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white p-4 font-sans">
-      <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+    <div className="min-h-screen flex items-center justify-center bg-[#F7F8FC] p-4 font-sans sm:p-6">
+      <div className="max-w-6xl w-full grid grid-cols-1 gap-8 md:grid-cols-[1.05fr_0.95fr] items-center">
 
         {/* LEFT SIDE: ILLUSTRATION */}
-        <div className="hidden md:flex justify-center">
+        <div className="hidden overflow-hidden rounded-[2.5rem] bg-white p-8 shadow-sm ring-1 ring-gray-100 md:block">
+          <p className="text-xs font-black uppercase tracking-[0.2em] text-indigo-600">Account Recovery</p>
+          <h2 className="mt-3 max-w-md text-4xl font-black leading-tight text-gray-950">Get back to your workspace securely.</h2>
           <Image
             src="/artwork.jpg"
             alt="Artwork"
             width={500}
             height={500}
-            className="w-full max-w-md object-contain"
+            className="mt-6 w-full max-w-md object-contain"
           />
         </div>
 
         {/* RIGHT SIDE: FORM */}
-        <div className="flex flex-col space-y-6 px-8 md:px-16">
+        <div className="flex flex-col space-y-6 rounded-[2rem] bg-white p-6 shadow-sm ring-1 ring-gray-100 sm:p-8">
 
           {/* LOGO */}
           <div className="mb-4">
@@ -62,7 +60,7 @@ export default function ForgotPassword() {
               alt="Logo"
               width={150}
               height={60}
-              className="h-20 w-auto mb-7 object-contain"
+                className="h-14 w-auto object-contain"
             />
           </div>
 
@@ -71,14 +69,14 @@ export default function ForgotPassword() {
               <div className="bg-gray-100 p-2 rounded-full">
                 <Lock className="w-5 h-5 text-gray-700" />
               </div>
-              <h1 className="text-3xl font-bold text-gray-900">Forgot password?</h1>
+              <h1 className="text-3xl font-black text-gray-950">Forgot password?</h1>
             </div>
             <p className="text-gray-500 text-sm leading-relaxed">
               No worries, we'll send you reset instructions.
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5 w-full max-w-sm">
+          <form onSubmit={handleSubmit} className="space-y-5 w-full">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Email address
@@ -89,7 +87,7 @@ export default function ForgotPassword() {
                   type="email"
                   required
                   placeholder="Enter your email"
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl outline-none focus:border-black focus:ring-1 focus:ring-black transition-all"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl outline-none focus:border-black focus:ring-4 focus:ring-gray-100 transition-all"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={status === 'loading' || status === 'success'}
@@ -115,7 +113,7 @@ export default function ForgotPassword() {
               disabled={status === 'loading' || status === 'success'}
               className={`w-full py-4 rounded-full font-bold transition-all ${status === 'success'
                 ? 'bg-gray-200 text-gray-500'
-                : 'bg-black text-white hover:bg-gray-800 active:scale-95'
+                : 'bg-gray-950 text-white hover:bg-indigo-700 active:scale-95'
                 }`}
             >
               {status === 'loading'
@@ -138,4 +136,3 @@ export default function ForgotPassword() {
     </div>
   );
 }
-

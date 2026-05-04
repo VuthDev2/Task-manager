@@ -70,16 +70,44 @@ export default function AdminCategories() {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#F3F4F9]">
+    <div className="flex min-h-screen bg-[#F6F7FB]">
       <AdminSidebar />
       
-      <main className="flex-1 p-8 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
         <AdminHeader title="Categories" />
+
+        <section className="mb-6 rounded-[1.75rem] border border-gray-100 bg-white p-6 shadow-sm">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-indigo-600">Taxonomy</p>
+              <h2 className="mt-3 text-2xl font-black tracking-tight text-gray-950">Keep workspace categories controlled.</h2>
+              <p className="mt-2 max-w-2xl text-sm leading-7 text-gray-500">
+                Admin categories create the shared structure users rely on when assigning and reporting tasks.
+              </p>
+            </div>
+            <button
+              onClick={() => { setEditingCategory(null); setIsModalOpen(true); }}
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-gray-950 px-6 py-3 text-sm font-black text-white shadow-lg transition hover:bg-indigo-700"
+            >
+              <Plus size={17} />
+              New Category
+            </button>
+          </div>
+          <div className="relative mt-6">
+            <Search size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search categories or projects..."
+              className="w-full rounded-2xl border border-gray-100 bg-gray-50 py-3 pl-11 pr-4 text-sm font-semibold text-gray-700 outline-none transition focus:border-gray-950 focus:bg-white focus:ring-4 focus:ring-gray-100"
+            />
+          </div>
+        </section>
 
         {error && <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-xl">{error}</div>}
 
         {/* CATEGORIES GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {loading ? (
             <div className="col-span-full text-center py-20 text-gray-400">Loading categories...</div>
           ) : filteredCategories.length === 0 ? (
@@ -90,7 +118,7 @@ export default function AdminCategories() {
               return (
                 <div
                   key={cat.id}
-                  className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-white hover:shadow-xl transition-all group"
+                  className="rounded-[1.5rem] border border-gray-100 bg-white p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md group"
                 >
                   <div className="flex justify-between items-start mb-4">
                     <div className={`p-3 rounded-2xl ${cat.color} bg-opacity-10`}>
@@ -105,7 +133,7 @@ export default function AdminCategories() {
                       </button>
                     </div>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">{cat.name}</h3>
+                  <h3 className="text-xl font-black text-gray-950 mb-2">{cat.name}</h3>
                   <p className="text-sm font-semibold text-gray-700">{cat.project_name || '—'}</p>
                   <p className="text-xs text-gray-500 mt-2">{cat.description || 'No description'}</p>
                   <div className="mt-6 pt-4 border-t border-gray-50 text-xs text-gray-400">

@@ -78,38 +78,46 @@ export default function NotificationsClient({ initialNotifications }: { initialN
   const unreadCount = notifications.filter(n => !n.is_read).length;
 
   return (
-    <div className="flex min-h-screen bg-[#F3F4F9]">
+    <div className="flex min-h-screen bg-[#F6F7FB]">
       <Sidebar />
 
-      <main className="flex-1 p-8">
+      <main className="flex-1 p-4 sm:p-6 lg:p-8">
         <UserHeader title="Notifications" />
 
+        <section className="mb-6 rounded-[1.75rem] border border-gray-100 bg-white p-6 shadow-sm">
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-indigo-600">Inbox</p>
+          <h2 className="mt-3 text-2xl font-black tracking-tight text-gray-950">Stay aware without losing focus.</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-7 text-gray-500">
+            Review updates, clear completed messages, and keep unread items visible.
+          </p>
+        </section>
+
         {/* Filters & Actions */}
-        <div className="flex justify-between items-center mb-6 px-2">
-          <div className="flex gap-4">
+        <div className="mb-6 flex flex-col gap-4 rounded-[1.5rem] border border-gray-100 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setFilter('all')}
-              className={`text-sm font-bold pb-1 ${filter === 'all'
-                  ? 'text-blue-600 border-b-2 border-blue-600'
-                  : 'text-gray-500 hover:text-gray-700'
+              className={`rounded-full px-4 py-2 text-sm font-black ${filter === 'all'
+                  ? 'bg-gray-950 text-white'
+                  : 'bg-gray-50 text-gray-500 hover:text-gray-700'
                 }`}
             >
               All {notifications.length > 0 && `(${notifications.length})`}
             </button>
             <button
               onClick={() => setFilter('unread')}
-              className={`text-sm font-bold pb-1 ${filter === 'unread'
-                  ? 'text-blue-600 border-b-2 border-blue-600'
-                  : 'text-gray-500 hover:text-gray-700'
+              className={`rounded-full px-4 py-2 text-sm font-black ${filter === 'unread'
+                  ? 'bg-gray-950 text-white'
+                  : 'bg-gray-50 text-gray-500 hover:text-gray-700'
                 }`}
             >
               Unread {unreadCount > 0 && `(${unreadCount})`}
             </button>
             <button
               onClick={() => setFilter('archive')}
-              className={`text-sm font-bold pb-1 ${filter === 'archive'
-                  ? 'text-blue-600 border-b-2 border-blue-600'
-                  : 'text-gray-500 hover:text-gray-700'
+              className={`rounded-full px-4 py-2 text-sm font-black ${filter === 'archive'
+                  ? 'bg-gray-950 text-white'
+                  : 'bg-gray-50 text-gray-500 hover:text-gray-700'
                 }`}
             >
               Archive
@@ -118,7 +126,7 @@ export default function NotificationsClient({ initialNotifications }: { initialN
           {unreadCount > 0 && (
             <button
               onClick={handleMarkAllAsRead}
-              className="text-xs font-bold text-gray-400 hover:text-gray-600 transition-colors"
+              className="text-xs font-black text-indigo-600 hover:underline"
             >
               Mark all as read
             </button>
@@ -126,10 +134,11 @@ export default function NotificationsClient({ initialNotifications }: { initialN
         </div>
 
         {/* Notifications Feed */}
-        <div className="max-w-4xl space-y-4">
+        <div className="max-w-4xl space-y-3">
           {filteredNotifications.length === 0 ? (
-            <div className="text-center py-20 bg-white/40 rounded-[2.5rem] border-2 border-dashed border-gray-200 font-black text-gray-400 italic">
-              No notifications
+            <div className="rounded-[2rem] border border-dashed border-gray-200 bg-white py-20 text-center shadow-sm">
+              <p className="text-lg font-black text-gray-900">No notifications</p>
+              <p className="mt-2 text-sm font-semibold text-gray-400">You are all caught up.</p>
             </div>
           ) : (
             filteredNotifications.map((notification) => (
@@ -183,7 +192,7 @@ function NotificationItem({ notification, onMarkRead, onDismiss }: {
   };
 
   return (
-    <div className={`bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-all flex items-start gap-4 relative overflow-hidden group border border-transparent hover:border-gray-100 ${notification.is_read ? 'opacity-60' : ''
+    <div className={`relative flex items-start gap-4 overflow-hidden rounded-[1.5rem] border border-gray-100 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md group ${notification.is_read ? 'opacity-70' : ''
       }`}>
       <div className={`absolute left-0 top-0 bottom-0 w-1 ${statusColor}`} />
 

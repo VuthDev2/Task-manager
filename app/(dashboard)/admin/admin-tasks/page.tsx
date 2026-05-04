@@ -106,33 +106,52 @@ export default function AdminAllTasks() {
       <main className="flex-1 p-8 overflow-y-auto">
         <AdminHeader title="All Tasks" />
 
+        <section className="mb-6 rounded-[1.75rem] border border-gray-100 bg-white p-6 shadow-sm">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-indigo-600">Operations</p>
+              <h2 className="mt-3 text-2xl font-black tracking-tight text-gray-950">Monitor all assigned work.</h2>
+              <p className="mt-2 max-w-2xl text-sm leading-7 text-gray-500">
+                Create tasks, review workload health, and keep ownership clear across the full workspace.
+              </p>
+            </div>
+            <button
+              onClick={() => { setEditingTask(null); setIsModalOpen(true); }}
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-gray-950 px-6 py-3 text-sm font-black text-white shadow-lg transition hover:bg-indigo-700"
+            >
+              <Plus size={17} />
+              Create Task
+            </button>
+          </div>
+        </section>
+
         {/* Global Overview Metrics (dynamic) */}
-        <div className="grid grid-cols-4 gap-4 mb-10">
+        <div className="grid gap-4 mb-6 sm:grid-cols-2 xl:grid-cols-4">
           <MetricCard label="Total Tasks" value={totalTasks} trend="All" color="bg-blue-500" />
           <MetricCard label="In Progress" value={inProgress} trend="Active" color="bg-indigo-600" />
           <MetricCard label="Completed" value={completed} trend={`${Math.round(completed / totalTasks * 100) || 0}%`} color="bg-emerald-500" />
           <MetricCard label="Overdue" value={overdue} trend="Critical" color="bg-rose-500" />
         </div>
 
-        {/* Action & Create Task Bar */}
-        <div className="bg-[#1A1D21] p-6 rounded-[2rem] text-white flex justify-between items-center mb-10 shadow-xl relative overflow-hidden">
-          <div className="relative z-10">
-            <h2 className="text-xl font-bold">Create Task</h2>
-            <p className="text-xs text-gray-400 mt-1">Initialize a new system-wide project task</p>
+        <div className="mb-6 grid gap-3 rounded-[1.5rem] border border-gray-100 bg-white p-4 shadow-sm lg:grid-cols-[1fr_auto] lg:items-center">
+          <div className="relative">
+            <Search size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search tasks or assignees..."
+              className="w-full rounded-2xl border border-gray-100 bg-gray-50 py-3 pl-11 pr-4 text-sm font-semibold text-gray-700 outline-none transition focus:border-gray-950 focus:bg-white focus:ring-4 focus:ring-gray-100"
+            />
           </div>
-          <button
-            onClick={() => { setEditingTask(null); setIsModalOpen(true); }}
-            className="bg-white text-black p-3 rounded-2xl hover:scale-110 transition-transform shadow-lg relative z-10"
-          >
-            <Plus size={24} strokeWidth={3} />
-          </button>
-          <div className="absolute right-0 top-0 w-32 h-full bg-gradient-to-l from-white/10 to-transparent pointer-events-none" />
+          <span className="rounded-2xl bg-gray-50 px-4 py-3 text-sm font-black text-gray-500">
+            {filteredTasks.length} visible
+          </span>
         </div>
 
         {error && <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-xl">{error}</div>}
 
         {/* Task Grid - Bento Box Style */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {loading ? (
             <div className="col-span-full text-center py-20 text-gray-400">Loading tasks...</div>
           ) : filteredTasks.length === 0 ? (
@@ -181,7 +200,7 @@ export default function AdminAllTasks() {
 // Reusable MetricCard (unchanged except types)
 function MetricCard({ label, value, trend, color }: { label: string; value: number; trend: string; color: string }) {
   return (
-    <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-white flex flex-col justify-between hover:shadow-md transition-shadow">
+    <div className="rounded-[1.5rem] border border-gray-100 bg-white p-5 shadow-sm transition-shadow hover:shadow-md">
       <div className="flex justify-between items-start mb-4">
         <div className={`p-2 rounded-xl ${color} text-white`}>
           <TrendingUp size={16} />
@@ -189,7 +208,7 @@ function MetricCard({ label, value, trend, color }: { label: string; value: numb
         <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{trend}</span>
       </div>
       <div>
-        <p className="text-3xl font-black text-gray-900 tracking-tighter">{value}</p>
+        <p className="text-3xl font-black text-gray-950 tracking-tight">{value}</p>
         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">{label}</p>
       </div>
     </div>
@@ -213,8 +232,8 @@ function ProjectTaskCard({
   const priorityColor = getPriorityColor(task.priority);
 
   return (
-    <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-white flex flex-col hover:shadow-xl transition-all group">
-      <div className="flex justify-between items-start mb-8">
+    <div className="rounded-[1.5rem] border border-gray-100 bg-white p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md group">
+      <div className="flex justify-between items-start mb-6">
         <div className={`${priorityColor} text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm`}>
           {task.priority}
         </div>
@@ -228,7 +247,7 @@ function ProjectTaskCard({
         </div>
       </div>
 
-      <div className="flex-1 mb-8">
+      <div className="flex-1 mb-6">
         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1">Assigned Project</p>
         <h3 className="text-lg font-bold text-gray-900 leading-tight group-hover:text-blue-600 transition-colors">{task.title}</h3>
         <div className="flex items-center gap-2 mt-3">
@@ -237,7 +256,7 @@ function ProjectTaskCard({
         </div>
       </div>
 
-      <div className="space-y-4 pt-6 border-t border-gray-50">
+      <div className="space-y-4 pt-5 border-t border-gray-100">
         <div className="space-y-2">
           <div className="flex justify-between text-[10px] font-black uppercase text-gray-400">
             <span>Progress</span>

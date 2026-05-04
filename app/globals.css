@@ -93,6 +93,100 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}
+
+main {
+  min-width: 0;
+}
+
+main table {
+  min-width: 720px;
+}
+
+main:has(table) {
+  overflow-x: auto;
+}
+
+@media (max-width: 767px) {
+  aside + main {
+    width: 100%;
+    padding: 1rem !important;
+    padding-bottom: 6.75rem !important;
+  }
+
+  aside + main .grid {
+    min-width: 0;
+  }
+
+  aside + main h1 {
+    overflow-wrap: anywhere;
+  }
+}
+
+aside + main {
+  background:
+    radial-gradient(circle at top left, rgba(99, 102, 241, 0.08), transparent 32rem),
+    #f6f7fb;
+}
+
+aside + main :where(.bg-white) {
+  border-color: rgba(226, 232, 240, 0.9);
+}
+
+aside + main :where(button, a, input, select, textarea) {
+  transition-property: color, background-color, border-color, box-shadow, transform, opacity;
+  transition-duration: 180ms;
+}
+
+aside + main :where(input, select, textarea) {
+  min-height: 2.75rem;
+}
+
+aside + main :where(button:hover, a:hover) {
+  transform: translateY(-1px);
+}
+
+aside + main :where(button:active, a:active) {
+  transform: translateY(0);
+}
+
+aside + main :where(.rounded-\[2\.5rem\]) {
+  border-radius: 1.75rem;
+}
+
+aside + main :where(.rounded-\[2\.2rem\]) {
+  border-radius: 1.5rem;
+}
+
+aside + main :where(.shadow-xl) {
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+}
+
+aside + main :where(.shadow-sm) {
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 .dark {

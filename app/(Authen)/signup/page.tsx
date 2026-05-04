@@ -21,7 +21,7 @@ export default function SignUpPage() {
       } else if (result?.error) {
         setError(result.error);
       }
-    } catch (err) {
+    } catch {
       setError('An unexpected error occurred');
     } finally {
       setGoogleLoading(false);
@@ -30,13 +30,13 @@ export default function SignUpPage() {
 
   return (
     /* Full screen wrapper */
-    <div className="flex h-screen w-screen bg-white items-center justify-center p-6 overflow-hidden">
+    <div className="flex min-h-screen w-full items-center justify-center bg-[#F7F8FC] p-4 sm:p-6">
 
       {/* Centered Wrapper */}
-      <div className="flex w-full max-w-[1100px] items-center justify-center gap-16 lg:gap-24 relative">
+      <div className="grid w-full max-w-6xl items-center gap-8 lg:grid-cols-[0.95fr_1.05fr]">
 
         {/* LEFT SIDE: FORM */}
-        <div className="w-full max-w-[410px] flex flex-col z-5 mb-20">
+        <div className="w-full rounded-[2rem] bg-white p-6 shadow-sm ring-1 ring-gray-100 sm:p-8 lg:max-w-[480px] lg:justify-self-end">
 
           {/* Logo */}
           <div className="mb-8">
@@ -49,11 +49,11 @@ export default function SignUpPage() {
             />
           </div>
 
-          <h1 className="text-5xl font-black text-black tracking-tighter mb-2 italic uppercase">
+          <h1 className="text-4xl font-black text-gray-950 tracking-tight mb-2">
             Get Started!
           </h1>
-          <p className="text-sm font-bold text-gray-400 mb-8">
-            Enter your information to create an account
+          <p className="text-sm font-semibold text-gray-500 mb-8">
+            Create your workspace and start organizing team work today.
           </p>
 
           <form
@@ -75,7 +75,7 @@ export default function SignUpPage() {
                   name="first-name"
                   placeholder="First Name"
                   required
-                  className="w-full bg-white rounded-xl border border-gray-200 p-3 text-sm font-bold outline-none focus:border-black transition-all shadow-sm placeholder:text-gray-300"
+                className="w-full bg-white rounded-xl border border-gray-200 p-3 text-sm font-semibold outline-none focus:border-black focus:ring-4 focus:ring-gray-100 transition-all placeholder:text-gray-300"
                 />
               </div>
               <div className="space-y-1.5">
@@ -84,7 +84,7 @@ export default function SignUpPage() {
                   name="last-name"
                   placeholder="Last Name"
                   required
-                  className="w-full bg-white rounded-xl border border-gray-200 p-3 text-sm font-bold outline-none focus:border-black transition-all shadow-sm placeholder:text-gray-300"
+                className="w-full bg-white rounded-xl border border-gray-200 p-3 text-sm font-semibold outline-none focus:border-black focus:ring-4 focus:ring-gray-100 transition-all placeholder:text-gray-300"
                 />
               </div>
             </div>
@@ -97,7 +97,7 @@ export default function SignUpPage() {
                 type="email"
                 placeholder="m@example.com"
                 required
-                className="w-full bg-white rounded-xl border border-gray-200 p-3.5 text-sm font-bold outline-none focus:border-black transition-all shadow-sm placeholder:text-gray-300"
+                className="w-full bg-white rounded-xl border border-gray-200 p-3.5 text-sm font-semibold outline-none focus:border-black focus:ring-4 focus:ring-gray-100 transition-all placeholder:text-gray-300"
               />
             </div>
 
@@ -110,13 +110,13 @@ export default function SignUpPage() {
                 placeholder="••••••••"
                 required
                 minLength={6}
-                className="w-full bg-white rounded-xl border border-gray-200 p-3.5 text-sm font-bold outline-none focus:border-black transition-all shadow-sm placeholder:text-gray-300"
+                className="w-full bg-white rounded-xl border border-gray-200 p-3.5 text-sm font-semibold outline-none focus:border-black focus:ring-4 focus:ring-gray-100 transition-all placeholder:text-gray-300"
               />
             </div>
 
             {/* Error Message (same as login page) */}
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-600 p-3 rounded text-sm text-center">
+              <div className="bg-red-50 border border-red-200 text-red-600 p-3 rounded-xl text-sm text-center">
                 {error}
                 {error.includes("log in instead") && (
                   <Link href="/login" className="block mt-2 font-black underline hover:text-red-700 transition-colors uppercase text-[10px] tracking-widest">
@@ -129,7 +129,7 @@ export default function SignUpPage() {
             {/* Main Sign Up Button */}
             <button
               type="submit"
-              className="w-full mb-1 rounded-xl bg-black py-4 font-black text-white transition hover:bg-zinc-800 shadow-xl shadow-gray-200 active:scale-[0.98] cursor-pointer"
+              className="w-full mb-1 rounded-xl bg-gray-950 py-4 font-black text-white transition hover:bg-indigo-700 shadow-lg active:scale-[0.98] cursor-pointer"
             >
               Create an account
             </button>
@@ -183,7 +183,11 @@ export default function SignUpPage() {
         </div>
 
         {/* RIGHT SIDE: IMAGE */}
-        <div className="hidden lg:block w-[500px] pointer-events-none select-none">
+        <div className="hidden overflow-hidden rounded-[2.5rem] bg-white p-8 shadow-sm ring-1 ring-gray-100 lg:block">
+          <div className="mb-8">
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-indigo-600">Start Strong</p>
+            <h2 className="mt-3 max-w-md text-4xl font-black leading-tight text-gray-950">Build a workspace that stays organized from day one.</h2>
+          </div>
           <Image
             src="/artwork.jpg"
             alt="Sign Up Illustration"

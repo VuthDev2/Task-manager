@@ -78,16 +78,24 @@ export default function AdminReports() {
     .slice(0, 5);
 
   return (
-    <div className="flex min-h-screen bg-[#F3F4F9]">
+    <div className="flex min-h-screen bg-[#F6F7FB]">
       <AdminSidebar />
       
-      <main className="flex-1 p-8 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
         <AdminHeader title="Reports" />
+
+        <section className="mb-6 rounded-[1.75rem] border border-gray-100 bg-white p-6 shadow-sm">
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-indigo-600">Analytics</p>
+          <h2 className="mt-3 text-2xl font-black tracking-tight text-gray-950">Understand task health at a glance.</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-7 text-gray-500">
+            Use completion, priority, and contributor signals to spot where work needs attention.
+          </p>
+        </section>
 
         {error && <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-xl">{error}</div>}
 
         {/* TOP SUMMARY CARDS */}
-        <div className="grid grid-cols-5 gap-4 mb-10">
+        <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
           <ReportMetric label="Total Tasks" value={totalTasks} color="bg-blue-500" icon={FileText} />
           <ReportMetric label="In Progress" value={inProgress} color="bg-indigo-600" icon={Clock} />
           <ReportMetric label="Pending" value={pending} color="bg-rose-400" icon={AlertCircle} />
@@ -100,9 +108,9 @@ export default function AdminReports() {
         ) : (
           <>
             {/* MAIN DATA SECTION */}
-            <div className="grid grid-cols-3 gap-8 mb-8">
+            <div className="mb-6 grid gap-4 xl:grid-cols-3">
               {/* Completion Rate Gauge */}
-              <div className="col-span-1 bg-white p-8 rounded-[2.5rem] shadow-sm border border-white flex flex-col items-center justify-center text-center">
+              <div className="rounded-[1.75rem] border border-gray-100 bg-white p-8 shadow-sm flex flex-col items-center justify-center text-center">
                 <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-8">Completion Rate</h3>
                 <div className="relative w-48 h-48 flex items-center justify-center mb-6">
                   <svg className="w-full h-full transform -rotate-90">
@@ -130,7 +138,7 @@ export default function AdminReports() {
               </div>
 
               {/* Priority Breakdown */}
-              <div className="col-span-1 bg-white p-8 rounded-[2.5rem] shadow-sm border border-white">
+              <div className="rounded-[1.75rem] border border-gray-100 bg-white p-8 shadow-sm">
                 <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-6">By Priority</h3>
                 <div className="space-y-4">
                   <PriorityBar label="Hard" count={priorityCounts.Hard} total={totalTasks} color="bg-rose-500" />
@@ -141,7 +149,7 @@ export default function AdminReports() {
               </div>
 
               {/* Top Users by Tasks */}
-              <div className="col-span-1 bg-white p-8 rounded-[2.5rem] shadow-sm border border-white">
+              <div className="rounded-[1.75rem] border border-gray-100 bg-white p-8 shadow-sm">
                 <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-6">Top Contributors</h3>
                 <div className="space-y-4">
                   {topUsers.map(([email, count]) => (
@@ -155,7 +163,7 @@ export default function AdminReports() {
             </div>
 
             {/* BOTTOM SECTION: Recent Generated Reports (static for now) */}
-            <div className="mt-8 bg-white p-6 rounded-[2rem] shadow-sm border border-white">
+            <div className="rounded-[1.75rem] border border-gray-100 bg-white p-6 shadow-sm">
               <div className="flex justify-between items-center mb-6 px-4">
                 <h3 className="font-bold text-gray-900">Recent Generated Reports</h3>
                 <button className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1">View All <ChevronRight size={14}/></button>
@@ -175,7 +183,7 @@ export default function AdminReports() {
 // Reusable components (unchanged)
 function ReportMetric({ label, value, color, icon: Icon }: any) {
   return (
-    <div className="bg-white p-4 rounded-[2rem] shadow-sm border border-white flex flex-col items-center justify-center group hover:shadow-md transition-all">
+    <div className="rounded-[1.5rem] border border-gray-100 bg-white p-4 shadow-sm flex flex-col items-center justify-center group hover:shadow-md transition-all">
       <div className={`${color} p-2 rounded-xl text-white mb-2 shadow-lg group-hover:scale-110 transition-transform`}>
         <Icon size={16} />
       </div>

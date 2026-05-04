@@ -130,31 +130,48 @@ export default function CategoriesClient({
   });
 
   return (
-    <div className="flex min-h-screen bg-[#F3F4F9]">
+    <div className="flex min-h-screen bg-[#F6F7FB]">
       <Sidebar />
-      <main className="flex-1 p-8">
+      <main className="flex-1 p-4 sm:p-6 lg:p-8">
         <UserHeader title="Categories" />
 
-        
-        <div className="flex justify-between items-center mb-8">
+        <section className="mb-6 rounded-[1.75rem] border border-gray-100 bg-white p-6 shadow-sm">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-indigo-600">Organization</p>
+              <h2 className="mt-3 text-2xl font-black tracking-tight text-gray-950">Group work by project context.</h2>
+              <p className="mt-2 max-w-2xl text-sm leading-7 text-gray-500">
+                Categories keep related tasks easy to scan, filter, and report on.
+              </p>
+            </div>
           <button
             onClick={() => { setEditingCategory(null); setIsModalOpen(true); }}
-            className="bg-black text-white px-6 py-3 rounded-2xl flex items-center gap-3 hover:bg-gray-800 transition-all shadow-lg active:scale-95"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-gray-950 px-6 py-3 text-sm font-black text-white shadow-lg transition hover:bg-indigo-700"
           >
-            <Plus size={20} />
-            <span className="font-black">New Category</span>
+              <Plus size={18} />
+              New Category
           </button>
-         
-        </div>
+          </div>
+          <div className="relative mt-6">
+            <Search size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search categories or projects..."
+              className="w-full rounded-2xl border border-gray-100 bg-gray-50 py-3 pl-11 pr-4 text-sm font-semibold text-gray-700 outline-none transition focus:border-gray-950 focus:bg-white focus:ring-4 focus:ring-gray-100"
+            />
+          </div>
+        </section>
 
         {error && <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-xl">{error}</div>}
 
         {filteredCategories.length === 0 ? (
-          <div className="text-center py-20 bg-white/40 rounded-[2.5rem] border-2 border-dashed border-gray-200 font-black text-gray-400 italic">
-            No categories yet. Create one!
+          <div className="rounded-[2rem] border border-dashed border-gray-200 bg-white py-20 text-center shadow-sm">
+            <p className="text-lg font-black text-gray-900">No categories yet</p>
+            <p className="mt-2 text-sm font-semibold text-gray-400">Create one to organize your task list.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {filteredCategories.map((cat) => {
               const taskCount = taskCounts[cat.name] || 0;
               const iconColor = colorMap[cat.color] || '#000';
@@ -163,7 +180,7 @@ export default function CategoriesClient({
               return (
                 <div
                   key={cat.id}
-                  className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all border border-gray-100 relative overflow-hidden group"
+                  className="relative overflow-hidden rounded-[1.5rem] border border-gray-100 bg-white p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md group"
                 >
                   <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${cat.color}`} />
 
@@ -175,7 +192,7 @@ export default function CategoriesClient({
                   </div>
 
                   <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-bold text-gray-900 text-lg">{cat.name}</h3>
+                    <h3 className="font-black text-gray-950 text-lg">{cat.name}</h3>
                     <div className="flex gap-2">
                       <button
                         onClick={() => { setEditingCategory(cat); setIsModalOpen(true); }}

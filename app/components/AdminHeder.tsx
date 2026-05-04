@@ -47,7 +47,7 @@ export default function AdminHeader({ title }: AdminHeaderProps) {
   const avatarSrc = profile?.avatar_url || '/avatar.png';
 
   return (
-    <header className="flex justify-between items-center mb-10">
+    <header className="flex flex-col gap-4 mb-8 sm:mb-10 lg:flex-row lg:items-center lg:justify-between">
       <div>
         <h1 className="text-2xl font-bold text-gray-900 tracking-tight">{title}</h1>
         <p className="text-[10px] text-blue-600 font-black uppercase tracking-[0.2em] mt-1">
@@ -55,26 +55,26 @@ export default function AdminHeader({ title }: AdminHeaderProps) {
         </p>
       </div>
 
-      <div className="flex items-center gap-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4 lg:gap-6">
         {/* Search Bar */}
-        <div className="relative">
+        <div className="relative w-full sm:w-auto">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
           <input
             type="text"
             placeholder="Search..."
-            className="text-gray-400 pl-10 pr-4 py-2 bg-white rounded-full w-72 border-none shadow-sm focus:ring-2 focus:ring-blue-100 outline-none transition-all"
+            className="text-gray-400 pl-10 pr-4 py-2 bg-white rounded-full w-full sm:w-72 border-none shadow-sm focus:ring-2 focus:ring-blue-100 outline-none transition-all"
           />
         </div>
 
         {/* Notification Bell */}
-        <div className="relative cursor-pointer hover:scale-110 transition-transform p-2 bg-white rounded-full shadow-sm">
+        <div className="relative cursor-pointer hover:scale-110 transition-transform p-2 bg-white rounded-full shadow-sm self-start sm:self-auto">
           <Bell size={20} className="text-gray-600" />
           <div className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
         </div>
 
         {/* Profile Section */}
-        <div className="flex items-center gap-3 border-l border-gray-200 pl-6">
-          <div className="text-right">
+        <div className="flex items-center gap-3 border-gray-200 sm:border-l sm:pl-6">
+          <div className="text-left sm:text-right">
             <p className="text-sm font-bold text-gray-900">{profile?.full_name || 'Admin'}</p>
             <p className="text-[10px] text-gray-400 font-bold uppercase">
               {profile?.role === 'admin' ? 'Super Admin' : 'Admin'}

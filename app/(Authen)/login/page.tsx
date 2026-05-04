@@ -31,7 +31,7 @@ export default function LoginPage() {
       } else if (result?.error) {
         setError(result.error);
       }
-    } catch (err) {
+    } catch {
       setError('An unexpected error occurred');
     } finally {
       setGoogleLoading(false);
@@ -39,23 +39,23 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex h-screen w-screen bg-white items-center justify-center p-6 overflow-hidden">
+    <div className="flex min-h-screen w-full items-center justify-center bg-[#F7F8FC] p-4 sm:p-6">
 
       {/* Centered Wrapper */}
-      <div className="flex w-full max-w-[1000px] items-center justify-center gap-16 lg:gap-24">
+      <div className="grid w-full max-w-6xl items-center gap-8 lg:grid-cols-[0.9fr_1.1fr]">
 
         {/* LEFT SIDE: FORM */}
-        <div className="w-full max-w-[380px] mb-22 flex flex-col z-50">
+        <div className="w-full rounded-[2rem] bg-white p-6 shadow-sm ring-1 ring-gray-100 sm:p-8 lg:max-w-[440px] lg:justify-self-end">
 
-          <div className="mb-10">
+          <div className="mb-8">
             <Image src="/logo.svg" alt="Logo" width={100} height={40} className="object-contain" />
           </div>
 
-          <h1 className="text-3xl font-black text-black tracking-tighter mb-2 uppercase">
+          <h1 className="text-3xl font-black text-gray-950 tracking-tight mb-2">
             Welcome Back!
           </h1>
-          <p className="text-sm font-bold text-gray-400 mb-8">
-            Please enter login details below
+          <p className="text-sm font-semibold text-gray-500 mb-8">
+            Sign in to manage your projects, tasks, and team updates.
           </p>
 
           <form
@@ -75,7 +75,7 @@ export default function LoginPage() {
                 type="email"
                 placeholder="Enter the email address"
                 required
-                className="w-full mb-2 text-gray-500 bg-white rounded-xl border border-gray-200 p-3.5 text-sm font-bold outline-none focus:border-black transition-all shadow-sm"
+                className="w-full mb-2 text-gray-700 bg-white rounded-xl border border-gray-200 p-3.5 text-sm font-semibold outline-none focus:border-black focus:ring-4 focus:ring-gray-100 transition-all"
               />
             </div>
 
@@ -88,7 +88,7 @@ export default function LoginPage() {
                   type="password"
                   placeholder="Enter the Password"
                   required
-                  className="w-full mb-2 text-gray-400 bg-white rounded-xl border border-gray-200 p-3.5 text-sm font-bold outline-none focus:border-black transition-all shadow-sm"
+                  className="w-full mb-2 text-gray-700 bg-white rounded-xl border border-gray-200 p-3.5 text-sm font-semibold outline-none focus:border-black focus:ring-4 focus:ring-gray-100 transition-all"
                 />
               </div>
 
@@ -97,7 +97,7 @@ export default function LoginPage() {
                   <input type="checkbox" name="remember" defaultChecked />
                   Remember me
                 </label>
-                <Link href="/forgot-password" className=" text-black-600 text-[10px] px-1  text-black uppercase hover:underline">
+                <Link href="/forgot-password" className="px-1 text-[10px] font-black uppercase text-gray-950 hover:underline">
                   Forgot password?
                 </Link>
               </div>
@@ -105,7 +105,7 @@ export default function LoginPage() {
 
             {/* Error Message */}
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-600 p-3 rounded text-sm text-center">
+              <div className="bg-red-50 border border-red-200 text-red-600 p-3 rounded-xl text-sm text-center">
                 {error}
               </div>
             )}
@@ -113,7 +113,7 @@ export default function LoginPage() {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full rounded-xl mt-1 bg-black py-4 font-black text-white transition hover:bg-zinc-800 shadow-xl active:scale-[0.98] cursor-pointer"
+              className="w-full rounded-xl mt-1 bg-gray-950 py-4 font-black text-white transition hover:bg-indigo-700 shadow-lg active:scale-[0.98] cursor-pointer"
             >
               Sign in
             </button>
@@ -161,14 +161,18 @@ export default function LoginPage() {
             {/* Footer */}
             <div className="pt-4 text-center">
               <p className="text-[12px] font-bold text-gray-400">
-                Don't have an account? <Link href="/signup" className="font-black text-blue-600 hover:underline">Sign Up</Link>
+                Don&apos;t have an account? <Link href="/signup" className="font-black text-blue-600 hover:underline">Sign Up</Link>
               </p>
             </div>
           </form>
         </div>
 
         {/* RIGHT SIDE: IMAGE */}
-        <div className="hidden lg:block w-[500px] pointer-events-none select-none">
+        <div className="hidden overflow-hidden rounded-[2.5rem] bg-white p-8 shadow-sm ring-1 ring-gray-100 lg:block">
+          <div className="mb-8">
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-indigo-600">Infinite Workspace</p>
+            <h2 className="mt-3 max-w-md text-4xl font-black leading-tight text-gray-950">A cleaner way to return to focused work.</h2>
+          </div>
           <Image
             src="/artwork.jpg"
             alt="Login Illustration"

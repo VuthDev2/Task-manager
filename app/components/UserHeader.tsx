@@ -157,11 +157,11 @@ export default function UserHeader({ title }: UserHeaderProps) {
   };
 
   return (
-    <header className="flex justify-between items-center mb-10">
+    <header className="flex flex-col gap-4 mb-8 sm:mb-10 lg:flex-row lg:items-center lg:justify-between">
       <h1 className="text-2xl font-black text-gray-900 tracking-tight">{title}</h1>
-      <div className="flex items-center gap-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4 lg:gap-6">
         {/* Search with suggestions */}
-        <div className="relative" ref={searchRef}>
+        <div className="relative w-full sm:w-auto" ref={searchRef}>
           <form onSubmit={handleSearchSubmit} className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
             <input
@@ -170,7 +170,7 @@ export default function UserHeader({ title }: UserHeaderProps) {
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => searchQuery.trim() && setShowSuggestions(true)}
               placeholder="Search..."
-              className="text-gray-400 pl-10 pr-4 py-2 bg-white rounded-full w-72 border-none shadow-sm focus:ring-2 focus:ring-indigo-100 outline-none transition-all text-sm font-medium"
+              className="text-gray-400 pl-10 pr-4 py-2 bg-white rounded-full w-full sm:w-72 border-none shadow-sm focus:ring-2 focus:ring-indigo-100 outline-none transition-all text-sm font-medium"
             />
             {searchQuery && (
               <button
@@ -232,7 +232,7 @@ export default function UserHeader({ title }: UserHeaderProps) {
         </div>
 
         {/* Notification bell */}
-        <Link href="/user/user-notification" className="relative cursor-pointer hover:scale-110 transition-transform p-2 bg-white rounded-full shadow-sm">
+        <Link href="/user/user-notification" className="relative cursor-pointer hover:scale-110 transition-transform p-2 bg-white rounded-full shadow-sm self-start sm:self-auto">
           <Bell size={20} className="text-gray-600" />
           {unreadCount > 0 && (
             <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center border-2 border-white">
@@ -242,8 +242,8 @@ export default function UserHeader({ title }: UserHeaderProps) {
         </Link>
 
         {/* Clickable profile */}
-        <Link href="/user/user-setting" className="flex items-center gap-3 border-l border-gray-200 pl-6 hover:opacity-80 transition-opacity">
-          <div className="text-right">
+        <Link href="/user/user-setting" className="flex items-center gap-3 border-gray-200 hover:opacity-80 transition-opacity sm:border-l sm:pl-6">
+          <div className="text-left sm:text-right">
             <p className="text-sm font-black text-gray-900">{profile?.full_name || 'User'}</p>
             <p className="text-[10px] text-gray-400 font-black uppercase tracking-tighter">
               {profile?.position || 'Add job title'}
